@@ -1,0 +1,26 @@
+---
+- name: check root password
+  command: grep '^root:!!' /etc/shadow
+  register: root_password_is_empty
+  failed_when: no
+
+- name: input password
+  pause:
+    prompt: "set your root password string: "
+    echo: no
+  register: input_str
+  when: root_password is not defined
+
+- name: get password
+  set_fact:
+    root_password: "{{ input_str.user_input }}"
+  when: root_password is not defined
+
+- name: set initial root password
+  user:
+    name: root
+    password: "{{ item | password_hash('sha512') }}"
+  when: root_password_is_empty.rc == 0
+  with_items: "{{ root_password }}"
+
+

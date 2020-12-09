@@ -1,0 +1,15 @@
+---
+- name: create a new port
+  openstack.cloud.port:
+    state: "{{ item.state }}"
+    admin_state_up: true
+    name: "{{ item.port_name }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+    network: "{{ network_name }}"
+    fixed_ips: "{{ item.port_fixed_ip }}"
+    device_owner: "{{ item.device_owner }}"
+    security_groups: "{{ item.security_group }}"
+    allowed_address_pairs: "{{ item.allowed_address_pairs | default(omit) }}"
+  with_items: "{{ port_lists }}"
+  register: port_facts
+

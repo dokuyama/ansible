@@ -1,0 +1,10 @@
+---
+- name: systemd settings
+  systemd:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled }}"
+    state: "{{ item.state }}"
+  with_items:
+   - [ "{{ systemd_service }}" ]
+
+

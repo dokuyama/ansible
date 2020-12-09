@@ -1,0 +1,28 @@
+---
+- name: copy LifeKeeper install iso image
+  copy:
+    src: "files/{{ lifekeeper_iso_file }}"
+    dest: "~/{{ lifekeeper_iso_file }}"
+
+- name: copy LifeKeeper license file
+  copy:
+    src: "files/{{ lifekeeper_license_file }}"
+    dest: "~/{{ lifekeeper_license_file }}"
+
+- name: copy LifeKeeper setup conf file
+  copy:
+    src: "files/{{ lifekeeper_setup_conf_file }}"
+    dest: "~/{{ lifekeeper_setup_conf_file }}"
+
+- name: copy LifeKeeper setup file
+  shell: >
+    mount -o loop ~/{{ lifekeeper_iso_file }} /media;
+    mount -o loop /media/sps_*.img /mnt;
+    mkdir -p ~/sps_installer;
+    cp -r /mnt/* ~/sps_installer/;
+    umount /mnt;
+    umount /media;
+  args:
+    creates: ~/sps_installer/setup
+
+

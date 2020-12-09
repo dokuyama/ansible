@@ -1,0 +1,9 @@
+- name: register an public key as keypair
+  os_keypair:
+    name: "{{ item.keypair_name }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+    public_key_file: "{{ item.public_key_file }}"
+    state: "{{ item.state }}"
+  with_items:
+   - "{{ keypair }}"
+

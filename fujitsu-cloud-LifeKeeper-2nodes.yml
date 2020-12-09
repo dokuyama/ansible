@@ -1,0 +1,103 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+    - vars/fujitsu-cloud-settings_vars.yml
+
+  roles:
+    - generic/ansible-ssh-key
+    - generic/get_my_global_ip
+    - { role: fujitsu_cloud/network, network: { network_name: "{{ network_name }}", state: "present" }}
+    - { role: fujitsu_cloud/network/subnet, subnet: { subnet_name: "{{ public_subnet_name }}", network_name: "{{ network_name }}", dns_servers: "{{ dns_servers }}", subnet_cidr: "{{ public_subnet_cidr }}", state: "present" } }
+    - { role: fujitsu_cloud/network/subnet, subnet: { subnet_name: "{{ private_subnet_name }}",  network_name: "{{ network_name }}", dns_servers: "{{ dns_servers }}", subnet_cidr: "{{ private_subnet_cidr }}", state: "present" } }
+    - { role: fujitsu_cloud/network/router, router: { router_name: "{{ router_name }}", router_attached_network: "{{ router_attached_network }}", subnet_name: "{{ public_subnet_name }}", state: "present"} }
+    - { role: fujitsu_cloud/keypair, keypair: { keypair_name: "{{ keypair_name }}", public_key_file: "{{ keypair_public_key_file_path }}", state: "present" } }
+    - { role: fujitsu_cloud/network/security-group, security_group: { name: "{{ mng_security_group_name }}", state: "present" }}
+    - fujitsu_cloud/network/security-group/rule
+    - { role: fujitsu_cloud/compute/server/group, server_group: "{{ lk_anti_affinity_server_group }}" }
+    - { role: fujitsu_cloud/network/port, port_lists: "{{ bastion_host_port1 }}" }
+    - { role: fujitsu_cloud/compute/server, server_name: "{{ bastion_host }}" }
+    - { role: fujitsu_cloud/network/port, port_lists: "{{ active_host_port1 }}" }
+    - { role: fujitsu_cloud/compute/server, server_name: "{{ active_host }}" }
+
+- hosts: bastion_hosts
+  gather_facts: yes
+  become: true
+  vars_files:
+    - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+    - vars/fujitsu-cloud-settings_vars.yml
+
+  roles:
+   - generic/check-ssh-port
+   - { role: linux/copy-ssh-key, target_user: "{{ ansible_user }}" }
+#   - { role: linux/yum, rpms: { name: "firewalld", state: "latest" } }
+#   - { role: linux/systemd, systemd_service: { name: "firewalld", enabled: true, state: "started" } }
+   - { role: linux/systemd, systemd_service: { name: "kdump", enabled: false, state: "stopped" } }
+#   - linux/nat-settings
+   - { role: linux/yum, rpms: { name: "@x11", state: "latest" }, when: ansible_distribution_major_version == "7" }
+   - { role: linux/yum, rpms: { name: "@Server with GUI", state: "latest" }, when: ansible_distribution_major_version == "8" }
+   - linux/set-timezone
+   - linux/set-hostname
+
+# OS baseic configuration
+- hosts: lk_hosts
+  gather_facts: yes
+  become: true
+  vars_files:
+   - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+   - vars/fujitsu-cloud-settings_vars.yml
+   - vars/os-settings_vars.yml
+
+  roles: 
+   - generic/check-ssh-port
+   - { role: linux/yum, rpms: { name: "@x11", state: "latest" }, when: ansible_distribution_major_version == "7" }
+   - { role: linux/yum, rpms: { name: "@Server with GUI", state: "latest" }, when: ansible_distribution_major_version == "8" }
+   - { role: linux/set-timezone, when: timezone is defined }
+   - { role: linux/selinux, when: selinux_state is defined }
+   - linux/set-hostname
+   - linux/copy-etc-hosts
+   - { role: linux/systemd, systemd_service: { name: "firewalld", enabled: false, state: "stopped" } }
+   - linux/swapfile/create
+   - linux/set-root-password
+
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+    - vars/fujitsu-cloud-settings_vars.yml
+
+  roles:
+   - { role: fujitsu_cloud/compute/image, volume: { volume_name: "{{ active_host_name }}-volume", container_format: "bare", disk_format: "qcow2", state: "present"} }
+   - { role: fujitsu_cloud/network/port, port_lists: "{{ standby_host_port1 }}" }
+   - { role: fujitsu_cloud/compute/server, server_name: "{{ standby_host }}" }
+   - { role: fujitsu_cloud/compute/volume, volume: "{{ active_data_volume }}" }
+   - { role: fujitsu_cloud/compute/volume, volume: "{{ standby_data_volume }}" }
+   - { role: fujitsu_cloud/compute/volume/attach, volume: "{{ active_data_volume }}" }
+   - { role: fujitsu_cloud/compute/volume/attach, volume: "{{ standby_data_volume }}" }
+
+
+- hosts: lk_hosts
+  gather_facts: yes
+  become: true
+  vars_files:
+   - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+   - vars/fujitsu-cloud-settings_vars.yml
+   - vars/os-settings_vars.yml
+
+  environment:
+    LANG: en_US.UTF-8
+    LC_CTYPE: en_US.UTF-8
+    LC_MESSAGES: en_US.UTF-8
+
+  roles:
+   - generic/check-ssh-port
+   - { role: linux/set-hostname, when: do_lifekeeper_install == true }
+   - { role: linux/sysctl, sysctl: { name: "net.ipv4.conf.all.rp_filter", value: "2", state: "present" }, when: do_lifekeeper_install == true }
+   - { role: linux/sysctl, sysctl: { name: "net.ipv4.conf.default.rp_filter", value: "2", state: "present" }, when: do_lifekeeper_install == true }
+   - { role: lifekeeper/copy-installer, when: do_lifekeeper_install == true }
+   - { role: lifekeeper/install-lifekeeper, when: do_lifekeeper_install == true }
+   - { role: linux/copy-ssh-key, target_user: "{{ ansible_user }}", when: do_lifekeeper_install == true }
+   - { role: linux/copy-ssh-key, target_user: "root", when: do_lifekeeper_install == true }
+   - { role: lifekeeper/pre-tasks-setup-script, when: do_lifekeeper_install == true}
+

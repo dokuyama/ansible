@@ -1,0 +1,8 @@
+---
+- name: execute yum
+  yum:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  with_items:
+   - [ "{{ rpms }}" ]
+

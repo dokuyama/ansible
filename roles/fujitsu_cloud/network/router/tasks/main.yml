@@ -1,0 +1,11 @@
+- name: create a router
+  os_router:
+    name: "{{ item.router_name }}"
+    network: "{{ item.router_attached_network }}"
+    interfaces:
+      - "{{ item.subnet_name }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: "{{ item.state }}"
+  with_items: 
+   - "{{ router }}"
+

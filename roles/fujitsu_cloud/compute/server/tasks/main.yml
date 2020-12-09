@@ -1,0 +1,82 @@
+---
+- name: create a new volume
+  os_volume:
+    display_name: "{{ item.name }}-volume"
+    image: "{{ item.volume_image }}"
+    size: "{{ item.volume_size }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+    bootable: true
+    timeout: 3600
+    state: present
+  with_items: "{{ server_name }}"
+
+- name: create instance and boot from the volume
+  os_server:
+    name: "{{ item.name }}"
+    flavor: "{{ item.server_flavor }}"
+    key_name: "{{ keypair_name }}"
+    boot_volume: "{{ item.name }}-volume"
+    # network_name and security_groups values not work if custom nics defined
+    network_name: "{{ item.network_name | default(omit) }}"
+    security_groups: "{{ item.security_group | default(omit) }}"
+    auto_ip: "{{ item.auto_ip }}"
+    userdata: "{{ item.server_userdata | default(omit) }}"
+    meta: "{{ item.server_meta | default(omit) }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+    nics: "{{ item.nics | default(omit) }}"
+    state: present
+    scheduler_hints:
+      "{{ item.scheduler_hints | default(omit) }}"
+  with_items: "{{ server_name }}"
+
+- name: retrieve facts about the instance
+  os_server_facts:
+    server: "{{ item.name }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+  register: nova_server
+  with_items: "{{ server_name }}"
+
+- name: get bastion ip address
+  set_fact:
+    bastion_ip: "{{ item.openstack_servers[0].accessIPv4 }}"
+  with_items: "{{ nova_server.results }}"
+  when: bastion_ip is not defined
+
+- name: get private ip address
+  set_fact:
+    private_ip: "{{ item.openstack_servers[0].private_v4 }}"
+  with_items: "{{ nova_server.results }}"
+
+- name: add server to inventory
+  add_host:
+    name: "{{ item.instance_name }}"
+    groups: "{{ item.groups }}"
+    ansible_host: "{{ bastion_ip }}"
+    ansible_user: "{{ item.ansible_user }}"
+    ansible_ssh_private_key_file: "{{ item.ansible_ssh_private_key_file }}"
+    ansible_ssh_extra_args: "{{ item.ansible_ssh_extra_args }}"
+  with_items: "{{ add_inventory_hosts }}"
+  when: item.groups == "bastion_hosts"
+
+- name: add server to inventory
+  add_host:
+    name: "{{ item.instance_name }}"
+    groups: "{{ item.groups }}"
+    ansible_host: "{{ active_host_port1_ip_address }}"
+    ansible_user: "{{ item.ansible_user }}"
+    ansible_ssh_private_key_file: "{{ item.ansible_ssh_private_key_file }}"
+    ansible_ssh_extra_args: "{{ item.ansible_ssh_extra_args }}"
+  with_items: "{{ add_inventory_hosts }}"
+  when: "'lk_active' in item.groups"
+
+- name: add server to inventory
+  add_host:
+    name: "{{ item.instance_name }}"
+    groups: "{{ item.groups }}"
+    ansible_host: "{{ standby_host_port1_ip_address }}"
+    ansible_user: "{{ item.ansible_user }}"
+    ansible_ssh_private_key_file: "{{ item.ansible_ssh_private_key_file }}"
+    ansible_ssh_extra_args: "{{ item.ansible_ssh_extra_args }}"
+  with_items: "{{ add_inventory_hosts }}"
+  when: "'lk_standby' in item.groups"
+

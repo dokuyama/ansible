@@ -1,0 +1,8 @@
+- name: create a network
+  os_network:
+    name: "{{ item.network_name }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: "{{ item.state }}"
+  with_items: 
+   - "{{ network }}"
+

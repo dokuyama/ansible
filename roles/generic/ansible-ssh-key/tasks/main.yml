@@ -1,0 +1,15 @@
+---
+# create ssh-keypair
+- name: check ssh public key
+  stat:  path="{{ keypair_public_key_file_path }}"
+  register: keypair_public_key_file_stat
+- name: check ssh public key
+  stat:  path="{{ keypair_private_key_file_path }}"
+  register: keypair_private_key_file_stat
+
+- name: create ssh keypair (if required)
+  when:
+    - not keypair_public_key_file_stat.stat.exists
+    - not keypair_private_key_file_stat.stat.exists
+  shell: ssh-keygen -f "{{ keypair_private_key_file_path }}" -q -N ""
+

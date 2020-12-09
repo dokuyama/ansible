@@ -1,0 +1,94 @@
+---
+
+# bastion node settings
+bastion_host:
+  - name: "{{ bastion_host_name }}"
+    auto_ip: yes
+    volume_size: "{{ bastion_host_volume_size }}"
+    volume_image: "{{ bastion_host_volume_image }}"
+    server_flavor: "{{ bastion_host_server_flavor }}"
+    nics:
+      - "port-name=bastion-port1"
+    security_group:
+      - "{{ mng_security_group_name }}"
+      - default
+bastion_host_port1:
+  - port_name: "bastion-port1"
+    device_owner: compute:jp-east-3a
+    port_fixed_ip:
+      - ip_address: "{{ bastion_host_port1_ip_address }}"
+    security_group:
+      - "{{ mng_security_group_name }}"
+      - default
+    state: present
+
+# lk node 1 settings
+active_host:
+  - name: "{{ active_host_name }}"
+    auto_ip: no
+    volume_size: "{{ active_host_volume_size }}"
+    volume_image: "{{ active_host_volume_image }}"
+    server_flavor: "{{ active_host_server_flavor }}"
+    nics:
+      - "port-name=active-port1"
+    security_group:
+      - default
+    scheduler_hints: { group: "{{ _server_group.results[0].id }}" }
+active_host_port1:
+  - port_name: "active-port1"
+    device_owner: compute:jp-east-3a
+    port_fixed_ip:
+      - ip_address: "{{ active_host_port1_ip_address }}"
+    allowed_address_pairs:
+      - ip_address: "{{ lk_vip }}"
+    security_group:
+      - default
+    state: present
+
+# lk node 2 settings
+standby_host:
+  - name: "{{ standby_host_name }}"
+    auto_ip: no
+    volume_size: "{{ standby_host_volume_size }}"
+    volume_image: "{{ standby_host_volume_image }}"
+    server_flavor: "{{ standby_host_server_flavor }}"
+    nics:
+      - "port-name=standby-port1"
+    security_group:
+      - default
+    scheduler_hints: { group: "{{ _server_group.results[0].id }}" }
+standby_host_port1:
+  - port_name: "standby-port1"
+    device_owner: compute:jp-east-3a
+    port_fixed_ip:
+      - ip_address: "{{ standby_host_port1_ip_address }}"
+    allowed_address_pairs:
+      - ip_address: "{{ lk_vip }}"
+    security_group:
+      - default
+    state: present
+
+# add to Inventory
+add_inventory_hosts:
+ - instance_name: "{{ bastion_host_name }}"
+   groups: bastion_hosts
+   ansible_user: "{{ bastion_os_user }}"
+   ansible_ssh_private_key_file: "{{ keypair_private_key_file_path }}"
+   ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+ - instance_name: "{{ active_host_name }}"
+   groups:
+    - lk_hosts
+    - lk_active
+   ansible_user: "{{ lk_os_user }}"
+   ansible_ssh_private_key_file: "{{ keypair_private_key_file_path }}"
+   ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ keypair_private_key_file_path }} {{ bastion_os_user }}@{{ bastion_ip }} -W %h:%p\""
+
+ - instance_name: "{{ standby_host_name }}"
+   groups:
+    - lk_hosts
+    - lk_standby
+   ansible_user: "{{ lk_os_user }}"
+   ansible_ssh_private_key_file: "{{ keypair_private_key_file_path }}"
+   ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ keypair_private_key_file_path }} {{ bastion_os_user }}@{{ bastion_ip }} -W %h:%p\""
+

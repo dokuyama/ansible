@@ -1,0 +1,19 @@
+---
+- name: NOBCASTPING setting
+  lineinfile:
+    dest: /etc/default/LifeKeeper
+    regexp: '^NOBCASTPING=0'
+    line: 'NOBCASTPING=1'
+    backup: yes
+    state: present
+
+- name: start lifekeeper
+  shell: /opt/LifeKeeper/bin/lkstart
+
+- name: copy ssh directory to root user
+  copy:
+    src: /home/{{ ansible_user }}/.ssh/authorized_keys
+    dest: ~/.ssh/authorized_keys
+    remote_src: yes
+    mode: 0600
+

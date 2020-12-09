@@ -1,0 +1,4 @@
+---
+- name: get my publicip
+  ipify_facts:
+

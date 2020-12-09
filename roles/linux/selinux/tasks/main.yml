@@ -1,0 +1,10 @@
+---
+- name: SELinux setting
+  selinux:
+    state: "{{ selinux_state }}"
+  register: selinux
+
+- name: reboot (if required)
+  reboot:
+  when: selinux.reboot_required
+

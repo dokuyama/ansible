@@ -1,0 +1,10 @@
+---
+- name: attach volume to server
+  openstack.cloud.server_volume:
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+    server: "{{ item.server }}"
+    volume: "{{ item.volume_name }}"
+    device: "{{ item.device_name }}"
+  with_items: "{{ volume }}"
+

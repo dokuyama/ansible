@@ -1,0 +1,8 @@
+- name: create security group
+  os_security_group:
+    name: "{{ item.name }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: "{{ item.state }}"
+  with_items: 
+   - "{{ security_group }}"
+

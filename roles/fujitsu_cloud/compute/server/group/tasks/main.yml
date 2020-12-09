@@ -1,0 +1,11 @@
+---
+- name: create/delete server group
+  openstack.cloud.server_group:
+    cloud: "{{ target_cloud | default(omit) }}"
+    name: "{{ item.server_group_name }}"
+    state: "{{ item.state }}"
+    policies:
+     - "{{ item.policies }}"
+  with_items: "{{ server_group }}"
+  register: _server_group
+

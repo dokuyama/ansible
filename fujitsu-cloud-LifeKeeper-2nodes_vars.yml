@@ -1,0 +1,74 @@
+---
+##
+## Generic roles
+##
+
+do_lifekeeper_install: true
+
+bastion_host_name: LK-TEST-bastion
+active_host_name: LK-TEST-db01
+standby_host_name: LK-TEST-db02
+bastion_os_user: k5user
+lk_os_user: k5user
+timezone: Asia/Tokyo
+root_password: testpass!2020
+lk_vip: 10.0.111.200
+lk_anti_affinity_server_group:
+ - { server_group_name: "lk-anti-affinity", policies: "anti-affinity", state: "present" }
+
+# Keypair (specify the pub/priv key file path)
+keypair_name: ansible_key
+keypair_public_key_file_path: files/id_rsa_ansible.pub
+keypair_private_key_file_path: files/id_rsa_ansible
+
+# OpenStack Network settings
+target_cloud: jp-east-3
+network_name: LK-TEST-network
+public_subnet_name: LK-TEST-public-subnet
+private_subnet_name: LK-TEST-private-subnet
+public_subnet_cidr: 10.0.111.0/24
+private_subnet_cidr: 10.0.112.0/24
+dns_servers: [ 8.8.8.8 ]
+router_attached_network: fip-net
+router_name: LK-TEST-router
+
+mng_security_group_name: "LK-TEST-mng"
+security_group_rules:
+  - { name: "ssh", security_group: "{{ mng_security_group_name }}", protocol: "tcp", port_range_min: "22", port_range_max: "22", remote_ip_prefix:  "{{ ipify_public_ip }}/32" }
+
+# bastion node settings
+bastion_host_volume_size: 30
+bastion_host_volume_image: "CentOS 8.2 64bit (English) 01"
+bastion_host_server_flavor: "T3-1"
+bastion_host_port1_ip_address: 10.0.111.11
+
+# active node settings
+active_host_volume_size: 30
+active_host_volume_image: "CentOS 8.2 64bit (English) 01"
+active_host_server_flavor: "T3-1"
+active_host_port1_ip_address: 10.0.111.101
+active_data_volume: 
+  - { volume_name: "{{ active_host_name }}-data-volume", size: 30, state: "present", server: "{{ active_host_name }}", device_name: "/dev/vdb" }
+
+# standby node settings
+standby_host_volume_size: 30
+standby_host_volume_image: "{{ active_host_name }}-volume-image"
+standby_host_server_flavor: "T3-1"
+standby_host_port1_ip_address: 10.0.111.102
+standby_data_volume:
+  - { volume_name: "{{ standby_host_name }}-data-volume", size: 30, state: "present", server: "{{ standby_host_name }}", device_name: "/dev/vdb" }
+
+
+# ----------------------------------------
+# LifeKeeper setup
+# ----------------------------------------
+# !!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!
+# If set do_lifekeeper_install true
+# you MUST put lifekeeper_iso_file and lifekeeper_license_file
+# and lifekeeper-setup.conf
+# !!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!
+lifekeeper_iso_file: LKL_V951_100620.iso
+lifekeeper_license_file: lifekeeper-license.txt
+lifekeeper_setup_conf_file: lifekeeper_installer.conf
+
+

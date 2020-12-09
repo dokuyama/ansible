@@ -1,0 +1,11 @@
+- name: add rule
+  os_security_group_rule:
+    security_group: "{{ item.security_group }}"
+    protocol: "{{ item.protocol }}"
+    port_range_min: "{{ item.port_range_min }}"
+    port_range_max: "{{ item.port_range_max }}"
+    remote_ip_prefix: "{{ allow_ip | default(item.remote_ip_prefix) }}"
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+  with_items: "{{ security_group_rules }}"
+

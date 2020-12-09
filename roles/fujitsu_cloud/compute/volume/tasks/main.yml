@@ -1,0 +1,9 @@
+---
+- name: create/delete openstack volume
+  openstack.cloud.volume:
+    cloud: "{{ target_cloud | default(omit) }}"
+    name: "{{ item.volume_name }}"
+    state: "{{ item.state }}"
+    size: "{{ item.size }}"
+  with_items: "{{ volume }}"
+

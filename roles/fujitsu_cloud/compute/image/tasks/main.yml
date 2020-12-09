@@ -1,0 +1,67 @@
+---
+- name: get volume info
+  openstack.cloud.volume_info:
+    cloud: "{{ target_cloud | default(omit) }}"
+    name: "{{ item.volume_name }}"
+  with_items: 
+   - "{{ volume }}"
+  register: _volumes
+
+- name: create snapshot
+  openstack.cloud.volume_snapshot:
+    cloud: "{{ target_cloud | default(omit) }}"
+    name: "{{ item.volume_name }}-snapshot"
+    volume: "{{ item.volume_name }}"
+    force: true
+  register: _snapshot
+  with_items: 
+   - "{{ volume }}"
+  when: item.state == "present"
+
+- name: create volume from snapshot
+  openstack.cloud.volume:
+    cloud: "{{ target_cloud | default(omit) }}"
+    size: "{{ _snapshot.results[0].snapshot.size }}"
+    snapshot_id: "{{ _snapshot.results[0].snapshot.id }}"
+    name: "{{ item.volume_name }}-snapshot-volume"
+    wait: yes
+  register: _snapshot_volume
+  with_items: 
+   - "{{ volume }}"
+  when: item.state == "present"
+
+- name: create/delete openstack image
+  openstack.cloud.image:
+    cloud: "{{ target_cloud | default(omit) }}"
+    name: "{{ item.volume_name }}-image"
+    container_format: "{{ item.container_formaa | default(omit) }}"
+    disk_format: "{{ item.disk_format | default(omit) }}"
+    state: "{{ item.state }}"
+    volume: "{{ _snapshot_volume.results[0].volume.id }}"
+    wait: yes
+    timeout: 3600
+#    properties:
+#     - "fcx.base_image_id='{{ 
+  with_items:
+   - "{{ volume }}"
+  register: _image
+
+#- name: delete volume from snapshot
+#  openstack.cloud.volume:
+#    cloud: "{{ target_cloud | default(omit) }}"
+#    name: "{{ item.volume_name }}-snapshot-volume"
+#    state: absent
+#  with_items: 
+#   - "{{ volume }}"
+#  when: item.state == "present"
+
+#- name: delete snaapshot
+#  openstack.cloud.volume_snapshot:
+#    cloud: "{{ target_cloud | default(omit) }}"
+#    name: "{{ item.volume_name }}-snapshot"
+#    volume: "{{ item.volume_name }}"
+#    state: absent
+#  with_items: 
+#   - "{{ volume }}"
+#  when: item.state == "present"
+  
