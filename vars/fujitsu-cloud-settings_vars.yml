@@ -16,7 +16,7 @@ bastion_host_port1:
   - port_name: "bastion-port1"
     device_owner: compute:jp-east-3a
     port_fixed_ip:
-      - ip_address: "{{ bastion_host_ip_address }}"
+      - ip_address: "{{ bastion_host_ip_addr }}"
     security_group:
       - "{{ mng_security_group_name }}"
       - default
@@ -38,7 +38,7 @@ active_host_port1:
   - port_name: "active-port1"
     device_owner: compute:jp-east-3a
     port_fixed_ip:
-      - ip_address: "{{ active_host_ip_address }}"
+      - ip_address: "{{ active_host_ip_addr }}"
     allowed_address_pairs:
       - ip_address: "{{ lk_vip }}"
     security_group:
@@ -61,7 +61,7 @@ standby_host_port1:
   - port_name: "standby-port1"
     device_owner: compute:jp-east-3a
     port_fixed_ip:
-      - ip_address: "{{ standby_host_ip_address }}"
+      - ip_address: "{{ standby_host_ip_addr }}"
     allowed_address_pairs:
       - ip_address: "{{ lk_vip }}"
     security_group:

@@ -40,13 +40,13 @@ security_group_rules:
 bastion_host_volume_size: 30
 bastion_host_volume_image: "CentOS 8.2 64bit (English) 01"
 bastion_host_server_flavor: "T3-1"
-bastion_host_ip_address: 10.0.111.11
+bastion_host_ip_addr: 10.0.111.11
 
 # active node settings
 active_host_volume_size: 30
 active_host_volume_image: "CentOS 8.2 64bit (English) 01"
 active_host_server_flavor: "T3-1"
-active_host_ip_address: 10.0.111.101
+active_host_ip_addr: 10.0.111.101
 active_data_volume: 
   - { volume_name: "{{ active_host_name }}-data-volume", size: 30, state: "present", server: "{{ active_host_name }}", device_name: "/dev/vdb" }
 
@@ -54,7 +54,7 @@ active_data_volume:
 standby_host_volume_size: 30
 standby_host_volume_image: "{{ active_host_name }}-volume-image"
 standby_host_server_flavor: "T3-1"
-standby_host_ip_address: 10.0.111.102
+standby_host_ip_addr: 10.0.111.102
 standby_data_volume:
   - { volume_name: "{{ standby_host_name }}-data-volume", size: 30, state: "present", server: "{{ standby_host_name }}", device_name: "/dev/vdb" }
 
