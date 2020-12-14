@@ -1,0 +1,13 @@
+---
+- name: create iam role
+  iam:
+    iam_type: role
+    name: "{{ aws_iam_role_name }}"
+    state: present
+    profile: "{{ aws_cli_profile | default(omit) }}"
+  #    managed_policy: "{{ aws_iam_role_managed_policy }}"
+  # 2020-08-06
+  # "state is present but all of the following are missing: assume_role_policy_document"
+#  ignore_errors: yes
+
+

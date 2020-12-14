@@ -1,0 +1,188 @@
+---
+# ----------------------------------------
+# VPC settings
+# ----------------------------------------
+
+# VPC Subnet
+public_subnet_name: "{{ proj_prefix }}-public"
+public_subnet_az: ap-northeast-1a
+private_subnet1_name: "{{ proj_prefix }}-private1"
+private_subnet1_az: ap-northeast-1a
+private_subnet2_name: "{{ proj_prefix }}-private2"
+private_subnet2_az: ap-northeast-1c
+private_subnet3_name: "{{ proj_prefix }}-private3"
+private_subnet3_az: ap-northeast-1d
+commpath_subnet1_name: "{{ proj_prefix }}-commpath1"
+commpath_subnet1_az: ap-northeast-1a
+commpath_subnet2_name: "{{ proj_prefix }}-commpath2"
+commpath_subnet2_az: ap-northeast-1c
+commpath_subnet3_name: "{{ proj_prefix }}-commpath3"
+commpath_subnet3_az: ap-northeast-1d
+
+aws_vpc_subnets:
+ - { name: "{{ public_subnet_name }}", az: "{{ public_subnet_az }}", cidr: "{{ public_subnet_cidr }}" }
+ - { name: "{{ private_subnet1_name }}", az: "{{ private_subnet1_az }}", cidr: "{{ private_subnet1_cidr }}" }
+ - { name: "{{ private_subnet2_name }}", az: "{{ private_subnet2_az }}", cidr: "{{ private_subnet2_cidr }}" }
+ - { name: "{{ private_subnet3_name }}", az: "{{ private_subnet3_az }}", cidr: "{{ private_subnet3_cidr }}" }
+ - { name: "{{ commpath_subnet1_name }}", az: "{{ commpath_subnet1_az }}", cidr: "{{ commpath_subnet1_cidr }}" }
+ - { name: "{{ commpath_subnet2_name }}", az: "{{ commpath_subnet2_az }}", cidr: "{{ commpath_subnet2_cidr }}" }
+ - { name: "{{ commpath_subnet3_name }}", az: "{{ commpath_subnet3_az }}", cidr: "{{ commpath_subnet3_cidr }}" }
+
+# IGW
+aws_vpc_igw_name: "{{ proj_prefix }}-igw"
+
+# Route Tables
+public_route_tables:
+ - name: "{{ public_subnet_name }}-route"
+   subnet: "{{ public_subnet_name }}"
+   dest: 0.0.0.0/0
+   gateway_id: "{{ aws_vpc_igw.gateway_id }}"
+private_route_tables:
+ - name: "{{ private_subnet1_name }}-route"
+   subnet: "{{ private_subnet1_name }}"
+   dest: 0.0.0.0/0
+   instance_id: "{{ _ec2_instance_facts.instances | selectattr('tags.Name', 'defined') | selectattr('tags.Name', 'equalto', bastion_host_name) | map(attribute='instance_id') | first }}"
+ - name: "{{ private_subnet2_name }}-route"
+   subnet: "{{ private_subnet2_name }}"
+   dest: 0.0.0.0/0
+   instance_id: "{{ _ec2_instance_facts.instances | selectattr('tags.Name', 'defined') | selectattr('tags.Name', 'equalto', bastion_host_name) | map(attribute='instance_id') | first }}"
+ - name: "{{ private_subnet3_name }}-route"
+   subnet: "{{ private_subnet3_name }}"
+   dest: 0.0.0.0/0
+   instance_id: "{{ _ec2_instance_facts.instances | selectattr('tags.Name', 'defined') | selectattr('tags.Name', 'equalto', bastion_host_name) | map(attribute='instance_id') | first }}"
+
+# for EC2 ARK
+ec2ark_route_tables:
+ - name: "{{ public_subnet_name }}-route"
+   subnet: "{{ public_subnet_name }}"
+   dest: "{{ lifekeeper_vip }}/32"
+   network_interface_id: "{{ ec2_eni_facts.network_interfaces | selectattr('private_ip_address', 'defined') | selectattr('private_ip_address', 'equalto', active_host_ip_addr) | map(attribute='id') | first }}"
+ - name: "{{ private_subnet1_name }}-route"
+   subnet: "{{ private_subnet1_name }}"
+   dest: "{{ lifekeeper_vip }}/32"
+   network_interface_id: "{{ ec2_eni_facts.network_interfaces | selectattr('private_ip_address', 'defined') | selectattr('private_ip_address', 'equalto', active_host_ip_addr) | map(attribute='id') | first }}"
+ - name: "{{ private_subnet2_name }}-route"
+   subnet: "{{ private_subnet2_name }}"
+   dest: "{{ lifekeeper_vip }}/32"
+   network_interface_id: "{{ ec2_eni_facts.network_interfaces | selectattr('private_ip_address', 'defined') | selectattr('private_ip_address', 'equalto', active_host_ip_addr) | map(attribute='id') | first }}"
+ - name: "{{ private_subnet3_name }}-route"
+   subnet: "{{ private_subnet3_name }}"
+   dest: "{{ lifekeeper_vip }}/32"
+   network_interface_id: "{{ ec2_eni_facts.network_interfaces | selectattr('private_ip_address', 'defined') | selectattr('private_ip_address', 'equalto', active_host_ip_addr) | map(attribute='id') | first }}"
+# ----------------------------------------
+
+
+# ----------------------------------------
+# IAM
+# ----------------------------------------
+
+# IAM Policy
+aws_iam_name: "{{ proj_prefix }}-ec2ark"
+aws_iam_policy_name: "{{ proj_prefix }}-ec2ark-policy"
+
+# IAM Role
+aws_iam_role_name: "{{ proj_prefix }}-ec2ark-role"
+aws_iam_role_managed_policy: "{{ proj_prefix }}-ec2ark-policy"
+# ----------------------------------------
+
+
+# ----------------------------------------
+# EC2
+# ----------------------------------------
+
+# key pair
+aws_ec2_key_name: "{{ proj_prefix }}-key"
+
+# EC2 instance settings
+ec2:
+ # bastion_host
+ - name: "{{ bastion_host_name }}"
+   key_name: "{{ aws_ec2_key_name }}"
+   instance_type: "{{ bastion_host_instance_type }}"
+   ami_id: "{{ bastion_host_ami_id }}"
+   security_groups:
+    - default
+    - "{{ proj_prefix }}-allow_ssh"
+   subnet_name: "{{ public_subnet_name }}"
+   volumes:
+    - device_name: /dev/sda1
+      ebs:
+        volume_size: "{{ bastion_host_volume_size }}"
+        delete_on_termination: true
+   source_dest_check: false
+   assign_public_ip: true
+
+ # active_host
+ - name: "{{ active_host_name }}"
+   key_name: "{{ aws_ec2_key_name }}"
+   instance_type: "{{ active_host_instance_type }}"
+   ami_id: "{{ active_host_ami_id }}"
+   security_groups:
+    - default
+   subnet_name: "{{ private_subnet1_name }}"
+   volumes:
+    - device_name: /dev/sda1
+      ebs:
+        volume_size: "{{ active_host_volume_size1 }}"
+        delete_on_termination: true
+    - device_name: /dev/xvdb
+      ebs:
+        volume_size: "{{ active_host_volume_size2 }}"
+        delete_on_termination: true
+   private_ip: "{{ active_host_ip_addr }}"
+   source_dest_check: false
+   assign_public_ip: false
+   instance_role: "{{ aws_iam_role_name }}"
+   secondary_private_ip: "{{ active_host_ip_addr_commpath }}"
+   secondary_eni_dev_index: 1
+   secondary_subnet_name: "{{ commpath_subnet1_name }}"
+
+ # qw_host
+ - name: "{{ qw_host_name }}"
+   key_name: "{{ aws_ec2_key_name }}"
+   instance_type: "{{ qw_host_instance_type }}"
+   ami_id: "{{ qw_host_ami_id }}"
+   security_groups:
+    - default
+   subnet_name: "{{ private_subnet3_name }}"
+   volumes:
+    - device_name: /dev/sda1
+      ebs:
+        volume_size: "{{ qw_host_volume_size }}"
+        delete_on_termination: true
+   private_ip: "{{ qw_host_ip_addr }}"
+   source_dest_check: false
+   assign_public_ip: false
+   instance_role: "{{ aws_iam_role_name }}"
+   secondary_private_ip: "{{ qw_host_ip_addr_commpath }}"
+   secondary_eni_dev_index: 1
+   secondary_subnet_name: "{{ commpath_subnet3_name }}"
+
+
+# add to Inventory
+add_inventory_hosts:
+ - instance_name: "{{ bastion_host_name }}"
+   ip_address_type: public_ip_address
+   groups: bastion_hosts
+   ansible_user: "{{ bastion_os_user }}"
+   ansible_ssh_private_key_file: "files/{{ aws_ec2_key_name }}.pem"
+   ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+ - instance_name: "{{ active_host_name }}"
+   ip_address_type: private_ip_address
+   groups:
+    - oracle_hosts
+    - lk_hosts
+   ansible_user: "{{ oracle_os_user }}"
+   ansible_ssh_private_key_file: "files/{{ aws_ec2_key_name }}.pem"
+   ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i files/{{ aws_ec2_key_name }}.pem {{ bastion_os_user }}@{{ bastion_ip }} -W %h:%p\""
+
+ - instance_name: "{{ qw_host_name }}"
+   ip_address_type: private_ip_address
+   groups:
+    - lk_hosts
+   ansible_user: "{{ qw_os_user }}"
+   ansible_ssh_private_key_file: "files/{{ aws_ec2_key_name }}.pem"
+   ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i files/{{ aws_ec2_key_name }}.pem {{ bastion_os_user }}@{{ bastion_ip }} -W %h:%p\""
+
+

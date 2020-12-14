@@ -1,0 +1,8 @@
+---
+- name: create a new filesystem
+  filesystem:
+    fstype: "{{ item.fstype }}"
+    device: "{{ item.device }}{{ item.number }}"
+    force: "{{ item.force | default(omit) }}"
+  with_items: "{{ filesystem }}"
+

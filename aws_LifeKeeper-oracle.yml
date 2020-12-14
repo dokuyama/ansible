@@ -1,0 +1,206 @@
+---
+# AWS Network configration
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - LifeKeeper-settings_vars.yml
+    - vars/aws-settings_vars.yml
+    - vars/aws-os-settings_vars.yml
+    - vars/oracle-clone-settings_vars.yml
+
+  pre_tasks:
+    - include_vars: vars/centos7-settings_vars.yml
+      when: os_type == "CentOS7"
+    - include_vars: vars/redhat7-settings_vars.yml
+      when: os_type == "RedHat7"
+
+  roles:
+    - generic/get_my_global_ip
+    - aws/vpc/create
+    - aws/vpc/subnet/create
+    - aws/vpc/igw/create
+    - { role: aws/vpc/route-tables/create, route_tables: "{{ public_route_tables }}" }
+    - aws/iam/role/create
+    - aws/iam/policy/create
+    - aws/ec2/key/create
+    - aws/ec2/security-group/create
+    - aws/ec2/instance/create
+    - aws/ec2/eni/create
+    - { role: aws/vpc/route-tables/create, route_tables: "{{ private_route_tables }}" }
+    - { role: aws/vpc/route-tables/update, route_tables: "{{ ec2ark_route_tables }}" }
+
+# bastion hosts configuration
+- hosts: bastion_hosts
+  gather_facts: yes
+  become: true
+  vars_files:
+    - LifeKeeper-settings_vars.yml
+    - vars/aws-settings_vars.yml
+    - vars/aws-os-settings_vars.yml
+    - vars/oracle-clone-settings_vars.yml
+
+  pre_tasks:
+    - include_vars: vars/centos7-settings_vars.yml
+      when: os_type == "CentOS7"
+    - include_vars: vars/redhat7-settings_vars.yml
+      when: os_type == "RedHat7"
+
+  roles:
+   - { role: linux/copy-ssh-key, target_user: "{{ ansible_user }}" }
+   - { role: linux/yum, rpms: { name: "firewalld", state: "latest" } }
+   - { role: linux/systemd, systemd_service: { name: "firewalld", enabled: true, state: "started" } }
+   - { role: linux/systemd, systemd_service: { name: "kdump", enabled: false, state: "stopped" } }
+   - linux/nat-settings
+   - { role: linux/yum, rpms: { name: "@x11", state: "latest" }, when: ansible_distribution_major_version == "7" }
+   - { role: linux/yum, rpms: { name: "@Server with GUI", state: "latest" }, when: ansible_distribution_major_version == "8" }
+   - linux/set-timezone
+   - linux/set-hostname
+
+# OS baseic configuration
+- hosts: lk_hosts
+  gather_facts: yes
+  become: true
+  vars_files:
+    - LifeKeeper-settings_vars.yml
+    - vars/aws-settings_vars.yml
+    - vars/aws-os-settings_vars.yml
+    - vars/oracle-clone-settings_vars.yml
+
+  pre_tasks:
+    - include_vars: vars/centos7-settings_vars.yml
+      when: os_type == "CentOS7"
+    - include_vars: vars/redhat7-settings_vars.yml
+      when: os_type == "RedHat7"
+
+  roles:
+   - { role: linux/yum, rpms: { name: "@x11", state: "latest" }, when: ansible_distribution_major_version == "7" }
+   - { role: linux/yum, rpms: { name: "@Server with GUI", state: "latest" }, when: ansible_distribution_major_version == "8" }
+   - { role: linux/set-timezone, when: timezone is defined }
+   - { role: linux/selinux, when: selinux_state is defined }
+   - linux/set-hostname
+   - linux/copy-etc-hosts
+   - { role: linux/systemd, systemd_service: { name: "firewalld", enabled: false, state: "stopped" } }
+   - linux/install-aws-cli
+   - linux/add_eth1
+   - linux/swapfile/create
+   - linux/set-root-password
+
+# oracle install
+- hosts: oracle_hosts
+  gather_facts: yes
+  become: true
+  vars_files:
+    - LifeKeeper-settings_vars.yml
+    - vars/aws-settings_vars.yml
+    - vars/aws-os-settings_vars.yml
+    - vars/oracle-clone-settings_vars.yml
+
+  pre_tasks:
+    - include_vars: vars/centos7-settings_vars.yml
+      when: os_type == "CentOS7"
+    - include_vars: vars/redhat7-settings_vars.yml
+      when: os_type == "RedHat7"
+
+  roles:
+  # datakeeper settings
+   - { role: linux/parted, partition: "{{ datakeeper_partition }}" }
+   - { role: linux/filesystem, filesystem: "{{ datakeeper_partition }}" }
+
+  # oracle settings
+   - oracle/install-depended-rpms
+   - { role: linux/yum, rpms: { name: "http://public-yum.oracle.com/repo/OracleLinux/OL7/latest/x86_64/getPackage/oracle-database-preinstall-19c-1.0-2.el7.x86_64.rpm", state: "latest" } }
+   - oracle/oracle-user-settings
+   - { role: oracle/mount-oracle-data-dir, filesystem: "{{ datakeeper_partition }}" }
+   - { role: oracle/install-oracle, when: do_oracle_install == true }
+
+# create 2nd oracle instance
+- hosts: localhost
+  gather_facts: yes
+  vars_files:
+    - LifeKeeper-settings_vars.yml
+    - vars/aws-settings_vars.yml
+    - vars/aws-os-settings_vars.yml
+    - vars/oracle-clone-settings_vars.yml
+
+  pre_tasks:
+    - include_vars: vars/centos7-settings_vars.yml
+      when: os_type == "CentOS7"
+    - include_vars: vars/redhat7-settings_vars.yml
+      when: os_type == "RedHat7"
+
+  roles:
+   - { role: aws/ec2/ami/create, target_instance: "{{ oracle_ami_target_instance }}", when: do_clone_oracle_instance == true }
+   - { role: aws/ec2/instance/create, ec2: "{{ oracle_standby_instance }}", add_inventory_hosts: "{{ add_oracle_standby_instance }}", when: do_clone_oracle_instance == true }
+#   - { role: aws/ec2/ami/delete, target_instance: "{{ oracle_ami_target_instance }}", when: do_clone_oracle_instance == true }
+   - { role: aws/ec2/eni/create, ec2: "{{ oracle_standby_instance }}", when do_clone_oracle_instance == true }
+
+# Lifekeeper setup
+- hosts: lk_hosts
+  gather_facts: yes
+  become: true
+  vars_files:
+    - LifeKeeper-settings_vars.yml
+    - vars/aws-settings_vars.yml
+    - vars/aws-os-settings_vars.yml
+    - vars/oracle-clone-settings_vars.yml
+    - vars/lifekeeper_generic_vars.yml
+
+  environment:
+    LANG: en_US.UTF-8
+    LC_CTYPE: en_US.UTF-8
+    LC_MESSAGES: en_US.UTF-8
+
+  pre_tasks:
+    - include_vars: vars/centos7-settings_vars.yml
+      when: os_type == "CentOS7"
+    - include_vars: vars/redhat7-settings_vars.yml
+      when: os_type == "RedHat7"
+    - include_vars: vars/lifekeeper_qwk_vars.yml
+      when: lk_setup_enable_qwk == true
+    - include_vars: vars/lifekeeper_datakeeper_vars.yml
+      when: lk_setup_enable_datakeeper == true
+    - include_vars: vars/lifekeeper_ec2_ark_vars.yml
+      when: lk_setup_create_ec2_resource == true
+    - include_vars: vars/lifekeeper_oracle_ark_vars.yml
+      when: lk_setup_create_oracle_resource == true
+
+  roles:
+   - { role: linux/set-hostname, when: do_lifekeeper_install == true }
+   - { role: linux/sysctl, sysctl: { name: "net.ipv4.conf.all.rp_filter", value: "2", state: "present" }, when: do_lifekeeper_install == true }
+   - { role: linux/sysctl, sysctl: { name: "net.ipv4.conf.default.rp_filter", value: "2", state: "present" }, when: do_lifekeeper_install == true }
+   - { role: lifekeeper/copy-installer, when: do_lifekeeper_install == true }
+   - { role: lifekeeper/install-lifekeeper, when: do_lifekeeper_install == true }
+   - { role: linux/copy-ssh-key, target_user: "{{ ansible_user }}", when: do_lifekeeper_install == true }
+   - { role: linux/copy-ssh-key, target_user: "root", when: do_lifekeeper_install == true }
+   - { role: lifekeeper/pre-tasks-setup-script, when: do_lifekeeper_install == true}
+
+# Lifekeeper setup for active host
+- hosts: "{{ active_host_name }}"
+  gather_facts: yes
+  become: true
+  vars_files:
+    - LifeKeeper-settings_vars.yml
+    - vars/aws-settings_vars.yml
+    - vars/aws-os-settings_vars.yml
+    - vars/oracle-clone-settings_vars.yml
+    - vars/lifekeeper_generic_vars.yml
+
+  pre_tasks:
+    - include_vars: vars/centos7-settings_vars.yml
+      when: os_type == "CentOS7"
+    - include_vars: vars/redhat7-settings_vars.yml
+      when: os_type == "RedHat7"
+    - include_vars: vars/lifekeeper_qwk_vars.yml
+      when: lk_setup_enable_qwk == true
+    - include_vars: vars/lifekeeper_datakeeper_vars.yml
+      when: lk_setup_enable_datakeeper == true
+    - include_vars: vars/lifekeeper_ec2_ark_vars.yml
+      when: lk_setup_create_ec2_resource == true
+    - include_vars: vars/lifekeeper_oracle_ark_vars.yml
+      when: lk_setup_create_oracle_resource == true
+
+  roles:
+   - { role: lifekeeper/copy-setup-script, when: do_lifekeeper_create_resource == true }
+   - { role: oracle/mount-oracle-data-dir, filesystem: "{{ datakeeper_partition }}", when: do_lifekeeper_create_resource == true }
+   - { role: lifekeeper/run-lifekeeper-setup-script, when: do_lifekeeper_create_resource == true }
+

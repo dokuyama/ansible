@@ -1,0 +1,67 @@
+---
+- name: copy installer
+  copy:
+    src: "files/{{ oracle_installer_file }}"
+    dest: "/home/oracle/{{ oracle_installer_file }}"
+    owner: oracle
+    group: oinstall
+
+- name: copy installer response file
+  copy:
+    src: "files/{{ oracle_installer_rsp_file }}"
+    dest: "/home/oracle/{{ oracle_installer_rsp_file }}"
+    owner: oracle
+    group: oinstall
+
+- name: unzip installer
+  become: yes
+  become_user: oracle
+  unarchive:
+    src: "/home/oracle/{{ oracle_installer_file }}"
+    dest: "{{ oracle_home_dir }}"
+    remote_src: yes
+    creates: "{{ oracle_home_dir }}/runInstaller"
+
+- name: run installer
+  shell: "{{ oracle_home_dir }}/runInstaller -silent -waitforcompletion -ignorePrereqFailure -responseFile /home/oracle/{{ oracle_installer_rsp_file }}"
+  args:
+    creates: "{{ oracle_home_dir }}/oraInst.loc"
+  become: yes
+  become_user: oracle
+  register: command_result
+
+- name: installation results
+  debug: var=command_result
+
+- name: root script
+  shell: >
+    /u01/app/oraInventory/orainstRoot.sh;
+    /u01/app/oracle/product/19.3.0/dbhome_1/root.sh;
+
+- name: db exec Config Tools
+  shell: "{{ oracle_home_dir }}/runInstaller -silent -executeConfigTools -responseFile /home/oracle/{{ oracle_installer_rsp_file }}"
+  args:
+    creates: "{{ oracle_home_dir }}/dbs/spfile{{ oracle_sid }}.ora"
+  become: yes
+  become_user: oracle
+  register: command_result
+
+- name: stop listener
+  shell: "{{ oracle_home_dir }}/bin/lsnrctl stop"
+  become: yes
+  become_user: oracle
+  ignore_errors: true
+  
+- name: stop database
+  shell: "su - oracle -c 'echo shutdown | {{ oracle_home_dir }}/bin/sqlplus / as sysdba'"
+  ignore_errors: true
+
+- name: copy listener.ora
+  template:
+    src: files/listener.ora.j2
+    dest: "{{ oracle_home_dir }}/network/admin/listener.ora"
+    backup: yes
+    owner: oracle
+    group: oinstall
+    
+

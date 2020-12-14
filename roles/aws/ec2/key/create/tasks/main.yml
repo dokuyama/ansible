@@ -1,0 +1,13 @@
+---
+- name: create ec2 key pair
+  ec2_key:
+    name: "{{ aws_ec2_key_name }}"
+    region: "{{ aws_region }}"
+    profile: "{{ aws_cli_profile | default(omit) }}"
+  register: lk_ora_key
+- name: output key file
+  shell: >
+    echo "{{ lk_ora_key.key.private_key }}" > files/{{ lk_ora_key.key.name }}.pem;
+    chmod 600 files/{{ lk_ora_key.key.name }}.pem
+  when: lk_ora_key.key.private_key is defined
+

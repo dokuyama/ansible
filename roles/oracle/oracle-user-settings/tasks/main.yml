@@ -1,0 +1,54 @@
+---
+- name: make .ssh dir
+  file:
+    path: /home/oracle/.ssh
+    state: directory
+    mode: 0700
+    owner: oracle
+    group: oinstall
+
+- name: copy ssh authorized_keys file to oracle user
+  copy:
+    src: /home/{{ ansible_user }}/.ssh/authorized_keys
+    dest: /home/oracle/.ssh/authorized_keys
+    mode: 0600
+    owner: oracle
+    group: oinstall
+    remote_src: yes
+
+- name: make oraInventory directory
+  file:
+    path: "{{ orainventory_dir }}"
+    state: directory
+    mode: 0755
+    owner: oracle
+    group: oinstall
+
+- name: make oracle_home directory
+  file:
+    path: "{{ oracle_home_dir }}"
+    state: directory
+    mode: 0755
+    owner: oracle
+    group: oinstall
+
+- name: make oracle_data directory
+  file:
+    path: "{{ oracle_data_dir }}"
+    state: directory
+    mode: 0755
+    owner: oracle
+    group: oinstall
+
+- name: oracle user's environment
+  blockinfile:
+    dest: /home/oracle/.bash_profile
+    create: yes
+    owner: oracle
+    group: oinstall
+    content: |
+      export ORACLE_HOME={{ oracle_home_dir }}
+      export PATH=$PATH:$ORACLE_HOME/bin
+      export ORACLE_SID={{ oracle_sid }}
+
+

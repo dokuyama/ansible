@@ -1,0 +1,18 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DisassociateAddress",
+                "ec2:DescribeAddresses",
+                "ec2:AssociateAddress",
+                "ec2:DescribeRouteTables",
+                "ec2:ReplaceRoute"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+

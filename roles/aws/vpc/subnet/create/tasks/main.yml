@@ -1,0 +1,13 @@
+---
+- name: create subnet
+  ec2_vpc_subnet:
+    tags:
+      Name: "{{ item.name }}"
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+    az: "{{ item.az }}"
+    cidr: "{{ item.cidr }}"
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    region: "{{ aws_region }}"
+  with_items: "{{ aws_vpc_subnets }}"
+  register: aws_vpc_subnets
+

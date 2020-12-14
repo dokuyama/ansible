@@ -1,0 +1,10 @@
+---
+- name: create igw
+  ec2_vpc_igw:
+    tags:
+      Name: "{{ aws_vpc_igw_name }}"
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    region: "{{ aws_region }}"
+  register: aws_vpc_igw
+

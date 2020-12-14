@@ -1,0 +1,19 @@
+---
+- name: add ip_forward to  sysctl.conf
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: enable NAT
+  shell: >
+    firewall-cmd --zone=external --change-interface=eth0;
+    firewall-cmd --zone=external --add-masquerade --permanent;
+    firewall-cmd --zone=internal --add-source={{ aws_vpc_cidr_block }};
+    firewall-cmd --direct --permanent --passthrough ipv4 -t nat -I POSTROUTING -o eth0 -j MASQUERADE -s {{ aws_vpc_cidr_block }};
+    firewall-cmd --runtime-to-permanent;
+    firewall-cmd --reload;
+
+

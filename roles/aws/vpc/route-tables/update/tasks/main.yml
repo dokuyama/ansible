@@ -1,0 +1,25 @@
+---
+- name: fact ENI
+  ec2_eni_info:
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    region: "{{ aws_region }}"
+    filters:
+      vpc-id: "{{ aws_vpc.vpc.id }}"
+  register: ec2_eni_facts
+
+- name: create/update route table
+  ec2_vpc_route_table:
+    tags:
+      Name: "{{ item.name }}"
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    subnets: "{{ item.subnet }}"
+    routes:
+      - dest: "{{ item.dest }}"
+        gateway_id: "{{ item.gateway_id | default(omit) }}"
+        instance_id: "{{ item.instance_id | default(omit) }}"
+        network_interface_id: "{{ item.network_interface_id | default(omit) }}"
+    purge_routes: false
+  with_items: "{{ route_tables }}"
+

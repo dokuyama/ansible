@@ -1,0 +1,12 @@
+---
+- name: create ec2 security group
+  ec2_group:
+    name: "{{ item.name }}"
+    description: "{{ item.desc }}"
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    region: "{{ aws_region }}"
+    rules: "{{ item.rules }}"
+    tags: { "Name": "{{ item.name }}" }
+  with_items: "{{ aws_ec2_security_groups }}"
+

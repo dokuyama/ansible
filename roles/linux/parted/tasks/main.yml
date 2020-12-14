@@ -1,0 +1,12 @@
+---
+- name: create a new primary partition
+  parted:
+    device: "{{ item.device }}"
+    label: "{{ item.label | default(omit) }}"
+    number: "{{ item.number }}"
+    part_start: "{{ item.part_start | default(omit) }}"
+    part_end: "{{ item.part_end | default(omit) }}"
+    flags: "{{ item.flags | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
+  with_items: "{{ partition }}"
+

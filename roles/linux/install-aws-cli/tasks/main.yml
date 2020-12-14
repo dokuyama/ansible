@@ -1,0 +1,57 @@
+---
+- name: check aws cli installed
+  command: aws help
+  register: aws_cli_result
+  failed_when: no
+
+- name: install epel-release
+  yum:
+    name: epel-release
+    state: latest
+  when:
+   - ansible_distribution == "CentOS"
+
+- name: install python-pip
+  yum:
+    name: python-pip
+    state: latest
+    enablerepo: epel
+  when:
+   - ansible_distribution == "CentOS"
+
+- name: install pip
+  command: easy_install pip
+  when: 
+   - ansible_distribution == "RedHat"
+   - ansible_distribution_major_version == "7"
+
+- name: install pip
+  command: easy_install-3 pip
+  when: 
+   - ansible_distribution == "RedHat"
+   - ansible_distribution_major_version == "8"
+
+- name: install aws cli
+  command: pip install awscli
+  when: aws_cli_result.rc == 2
+
+#- name: install aws cli
+#  shell: >
+#    curl -OL "https://bootstrap.pypa.io/get-pip.py";
+#    python get-pip.py;
+#    pip install awscli;
+
+- name: make aws cli config directory
+  file:
+    path: ~/.aws
+    state: directory
+
+- name: make aws cli config
+  blockinfile:
+    dest: ~/.aws/config
+    create: yes
+    content: |
+      [default]
+      region = {{ aws_region }}
+
+

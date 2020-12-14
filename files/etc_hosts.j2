@@ -3,4 +3,7 @@
 
 {{ active_host_port1_ip_address }}       {{ active_host_name }}
 {{ standby_host_port1_ip_address }}      {{ standby_host_name }}
+{% if qw_host_name is defined %}
+{{ qw_host_ip_addr }}  {{ qw_host_name }}
+{% endif %}
 

@@ -1,0 +1,30 @@
+---
+- name: facts ec2 instances
+  ec2_instance_info:
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    region: "{{ aws_region }}"
+    filters:
+      instance-state-name: ['running']
+  register: _ec2_instance_facts
+
+- name: facts ec2 ami
+  ec2_ami_info:
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    region: "{{ aws_region }}"
+    filters:
+      "tag:Name": "{{ item.ami_name }}"
+  with_items: "{{ target_instance }}"
+  register: ec2_ami_info_result
+
+# do not delete AMI, lifekeeper installed AMI is broken.
+- name: delete AMI
+  ec2_ami:
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    region: "{{ aws_region }}"
+    image_id: "{{ ec2_ami_info_result.results[0].images[0].image_id }}"
+    wait: yes
+    name: "{{ item.ami_name }}"
+    state: absent
+  with_items: "{{ target_instance }}"
+  when: ec2_ami_info_result.results[0].images[0].image_id is defined
+

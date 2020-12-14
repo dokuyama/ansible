@@ -1,0 +1,10 @@
+---
+- name: create iam policy
+  iam_policy:
+    iam_type: role
+    iam_name: "{{ aws_iam_role_name }}"
+    policy_name: "{{ aws_iam_policy_name }}"
+    policy_document: files/aws_iam_ec2ark_policy.json
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    state: present
+

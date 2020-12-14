@@ -1,0 +1,15 @@
+LISTENER =
+  (DESCRIPTION_LIST =
+    (DESCRIPTION =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = {{ lifekeeper_vip }})(PORT = 1521))
+    )
+  )
+
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (SID_NAME = {{ oracle_sid }})
+      (ORACLEL_HOME = {{ oracle_home_dir }})
+    )
+  )
+

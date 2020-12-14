@@ -1,0 +1,9 @@
+---
+- name: create VPC
+  ec2_vpc_net:
+    name: "{{ aws_vpc_name }}"
+    cidr_block: "{{ aws_vpc_cidr_block }}"
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    region: "{{ aws_region }}"
+  register: aws_vpc
+

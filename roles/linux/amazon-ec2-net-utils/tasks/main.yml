@@ -1,0 +1,45 @@
+---
+- name: unzip amazon-ec2-net-utils
+  become: no
+  unarchive:
+    src: https://github.com/aws/amazon-ec2-net-utils/archive/master.zip
+    dest: ~/
+    remote_src: yes
+
+- name: copy to ~/rpmbuild/SOURCES
+  become: no
+  shell: >
+    mkdir -p ~/rpmbuild/SOURCES;
+    cp -f ~/amazon-ec2-net-utils-master/* ~/rpmbuild/SOURCES
+
+- name: amazon-ec2-net-utils rpmbuild
+  become: no
+  shell: rpmbuild -ba ~/rpmbuild/SOURCES/amazon-ec2-net-utils.spec
+
+- name: get amazon-ec2-net-utils rpm
+  become: no
+  find:
+    paths: ~/rpmbuild/RPMS/noarch/
+    patterns: "amazon-ec2-net-utils-*.rpm"
+  register: amazon_ec2_net_utils_files
+
+
+- name: get latest amazon-ec2-net-utils rpm
+  set_fact:
+    latest_amazon_ec2_net_utils_file: "{{ amazon_ec2_net_utils_files.files | sort(attribute='mtime',reverse=true) | map(attribute='path') | list | first }}"
+
+- name: install amazon-ec2-net-utils
+  yum:
+    name: "{{ latest_amazon_ec2_net_utils_file }}"
+    state: present
+
+- name: get network interface list
+  set_fact:
+    nic_list: "{{ ansible_interfaces | reject('search', 'lo') | list }}"
+
+- name: secondary ip setting
+  shell: >
+    systemctl enable ec2net-ifup@{{ item }};
+    systemctl start ec2net-ifup@{{ item }};
+  with_items: "{{ nic_list }}"
+

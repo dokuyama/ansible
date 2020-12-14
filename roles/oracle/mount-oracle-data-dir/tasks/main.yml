@@ -1,0 +1,14 @@
+---
+- name: tempolary mount oracle data disk
+  shell: "mount |grep {{ item.device }}{{ item.number }} || mount {{ item.device }}{{ item.number }} {{ oracle_data_dir }}"
+  with_items: "{{ filesystem }}"
+  ignore_errors: true
+
+- name: chown oracle_data directory
+  file:
+    path: "{{ oracle_data_dir }}"
+    state: directory
+    mode: 0755
+    owner: oracle
+    group: oinstall
+

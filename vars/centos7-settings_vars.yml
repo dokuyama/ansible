@@ -1,0 +1,14 @@
+---
+# ----------------------------------------
+# CentOS 7.x settings
+# ----------------------------------------
+bastion_os_user: centos
+qw_os_user: centos
+oracle_os_user: centos
+
+# CentOS 7 (x86_64) - with Updates HV
+bastion_host_ami_id: ami-06a46da680048c8ae
+active_host_ami_id: ami-06a46da680048c8ae
+qw_host_ami_id: ami-06a46da680048c8ae
+
+

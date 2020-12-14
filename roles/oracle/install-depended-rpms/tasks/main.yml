@@ -1,0 +1,11 @@
+---
+- name: enable optional repos for RHEL
+  shell: yum-config-manager --enable rhui-rhel-7-server-rhui-optional-rpms
+  when: 
+   - ansible_distribution == "RedHat"
+   - ansible_distribution_major_version == "7"
+
+- name: install depended rpms
+  shell: >
+    yum install -y bc bind-utils glibc-devel libstdc++-devel  psmisc smartmontools sysstat unzip xorg-x11-utils xorg-x11-xauthcompat-libcap1 compat-libstdc++-33  ksh libaio-devel gcc-c++ compat-libcap1
+

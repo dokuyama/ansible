@@ -1,0 +1,4 @@
+---
+- name: x11 install
+  shell: yum groupinstall -y x11
+
