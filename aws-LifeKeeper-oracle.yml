@@ -3,7 +3,7 @@
 - hosts: localhost
   gather_facts: no
   vars_files:
-    - LifeKeeper-settings_vars.yml
+    - aws-LifeKeeper-oracle_vars.yml
     - vars/aws-settings_vars.yml
     - vars/aws-os-settings_vars.yml
     - vars/oracle-clone-settings_vars.yml
@@ -34,7 +34,7 @@
   gather_facts: yes
   become: true
   vars_files:
-    - LifeKeeper-settings_vars.yml
+    - aws-LifeKeeper-oracle_vars.yml
     - vars/aws-settings_vars.yml
     - vars/aws-os-settings_vars.yml
     - vars/oracle-clone-settings_vars.yml
@@ -61,7 +61,7 @@
   gather_facts: yes
   become: true
   vars_files:
-    - LifeKeeper-settings_vars.yml
+    - aws-LifeKeeper-oracle_vars.yml
     - vars/aws-settings_vars.yml
     - vars/aws-os-settings_vars.yml
     - vars/oracle-clone-settings_vars.yml
@@ -90,7 +90,7 @@
   gather_facts: yes
   become: true
   vars_files:
-    - LifeKeeper-settings_vars.yml
+    - aws-LifeKeeper-oracle_vars.yml
     - vars/aws-settings_vars.yml
     - vars/aws-os-settings_vars.yml
     - vars/oracle-clone-settings_vars.yml
@@ -117,7 +117,7 @@
 - hosts: localhost
   gather_facts: yes
   vars_files:
-    - LifeKeeper-settings_vars.yml
+    - aws-LifeKeeper-oracle_vars.yml
     - vars/aws-settings_vars.yml
     - vars/aws-os-settings_vars.yml
     - vars/oracle-clone-settings_vars.yml
@@ -139,7 +139,7 @@
   gather_facts: yes
   become: true
   vars_files:
-    - LifeKeeper-settings_vars.yml
+    - aws-LifeKeeper-oracle_vars.yml
     - vars/aws-settings_vars.yml
     - vars/aws-os-settings_vars.yml
     - vars/oracle-clone-settings_vars.yml
@@ -179,7 +179,7 @@
   gather_facts: yes
   become: true
   vars_files:
-    - LifeKeeper-settings_vars.yml
+    - aws-LifeKeeper-oracle_vars.yml
     - vars/aws-settings_vars.yml
     - vars/aws-os-settings_vars.yml
     - vars/oracle-clone-settings_vars.yml
