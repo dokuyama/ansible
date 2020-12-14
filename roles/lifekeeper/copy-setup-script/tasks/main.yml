@@ -7,7 +7,8 @@
 
 - name: copy setup config file
   become: no
-  template:
-    src: lifekeeper-setupk.conf.j2
+  template: 
+    src: lifekeeper-setup.conf.j2
     dest: ~/lifekeeper-setup/lifekeeper-setup.conf
+
 

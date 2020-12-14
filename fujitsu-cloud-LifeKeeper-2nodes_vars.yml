@@ -70,5 +70,14 @@ standby_data_volume:
 lifekeeper_iso_file: LKL_V951_100620.iso
 lifekeeper_license_file: lifekeeper-license.txt
 lifekeeper_setup_conf_file: lifekeeper_installer.conf
-
+# LifeKeeper Install options:
+# DataKeeper
+lk_HADR: "LKCONF_HADR=y"
+lk_lkDR: "LKCONF_steeleye_lkDR=y"
+# PostgreSQL ARK
+lk_lkPGSQL: "LKCONF_steeleye_lkPGSQL=y"
+# MySQL ARK
+lk_lkSQL: "LKCONF_steeleye_lkSQL=y"
+# Apache ARK
+lk_lkAPA: "LKCONF_steeleye_lkAPA=y"
 

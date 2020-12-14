@@ -26,7 +26,7 @@ lk_setup_qw_commpath_2_ip_addr: "# QW_COMMPATH_2_IP_ADDR is not set"
 # ---------------------
 # DataKeeper ARK Settings
 # ---------------------
- 
+
 
 # --------------------
 # EC2 ARK Settings

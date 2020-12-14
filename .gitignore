@@ -1,4 +1,7 @@
 *.iso
 id_rsa*
 lifekeeper-license.txt
+*.swp
+*.log
+*.retry
 

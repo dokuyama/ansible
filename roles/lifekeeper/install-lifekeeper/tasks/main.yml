@@ -1,27 +1,21 @@
 ---
+- name: installer config changed check
+  file:
+    path: /root/lifekeeper-install.DONE
+    state: absent
+  when: lk_installer_config_change.changed
+
 - name: install lifekeeper
   shell: script -q -e -c "~/sps_installer/setup -f ~/{{ lifekeeper_setup_conf_file }} -q y" ~/lifekeeper_install.log
   args:
-    creates: /opt/LifeKeeper/bin/lkstart
+    creates: /root/lifekeeper-install.DONE
   register: lifekeeper_install_result
-  ignore_errors: true
 
-#- name: debug
-#  debug: var=lifekeeper_install_result
-
-#- name: print_msg
-#  debug:
-#    msg: "{{ item }}"
-#  with_items:
-#   - "Currentry lifekeeper installer not work."
-#   - "Please run 'sps_installer/setup' manualy."
-#   - "# ~/sps_installer/setup -q y -f ~/{{ lifekeeper_setup_conf_file }}"
-#  when: lifekeeper_install_result.rc != 0
-
-#- name: wait LifeKeeper install
-#  pause:
-#    prompt: "Please install LifeKeeper manualy, if press Enter key to continue."
-#  when: lifekeeper_install_result.rc != 0
+- name: lifekeeper install check
+  file:
+    path: /root/lifekeeper-install.DONE
+    state: touch
+  when: lifekeeper_install_result.rc == 0
 
 - name: lkstart
   shell: /opt/LifeKeeper/bin/lkstart
@@ -31,10 +25,16 @@
   register: check_lisense_file
   failed_when: false
 
-#- name: debug
-#  debug: var=check_lisense_file
-
 - name: install lifekeeper license
   shell: /opt/LifeKeeper/bin/lkkeyins ~/{{ lifekeeper_license_file }}
   when: check_lisense_file.rc == 2
+ 
+- name: add PATH, MANPATH to /root/.bash_profile
+  lineinfile:
+    dest: /root/.bash_profile
+    line: "{{ item }}"
+  with_items:
+    - 'PATH=$PATH:/opt/LifeKeeper/bin'
+    - 'MANPATH=$MANPATH:/opt/LifeKeeper/man'
+    - 'export PATH MANPATH'
 

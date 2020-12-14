@@ -9,10 +9,11 @@
     src: "files/{{ lifekeeper_license_file }}"
     dest: "~/{{ lifekeeper_license_file }}"
 
-- name: copy LifeKeeper setup conf file
-  copy:
-    src: "files/{{ lifekeeper_setup_conf_file }}"
+- name: copy LifeKeeper installer conf file
+  template:
+    src: "lifekeeper_installer.conf.j2"
     dest: "~/{{ lifekeeper_setup_conf_file }}"
+  register: lk_installer_config_change
 
 - name: copy LifeKeeper setup file
   shell: >
@@ -24,5 +25,4 @@
     umount /media;
   args:
     creates: ~/sps_installer/setup
-
 
