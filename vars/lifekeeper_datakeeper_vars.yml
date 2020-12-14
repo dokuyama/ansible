@@ -1,0 +1,9 @@
+---
+# LifeKeeper Install options:
+lk_HADR: "LKCONF_HADR=y"
+lk_lkDR: "LKCONF_steeleye_lkDR=y"
+
+# LifeKeeper Resource setup script options:
+lk_setup_ark_datakeeper: "ARK_DATAKEEPER=Y"
+
+

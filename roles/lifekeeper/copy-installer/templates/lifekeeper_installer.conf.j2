@@ -1,0 +1,84 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# SIOS Protection Suite for Linux 9.5.0-7075 Setup
+#
+# LKCONF_HAVE_LICENSE is not set
+# LKCONF_KITS_ONLY is not set
+# LKCONF_NFSD_RUNNING is not set
+# LKCONF_SSP is not set
+# LKCONF_HAVE_HADR is not set
+# LKCONF_HAVE_HANFS is not set
+# LKCONF_HAVE_JRE is not set
+# LKCONF_CENT60 is not set
+{{ lk_hv_vmware }}
+{{ lk_hv_ec2 }}
+
+#
+# Your OS is CentOS Linux 7
+#
+LKCONF_INSTALL_JRE=y
+{{ lk_HADR }}"
+{{ lk_enable_qwk }}
+
+#
+# LifeKeeper Authentication
+#
+LKCONF_AUTH=y
+LKCONF_LKUSER_lkadmin="root"
+LKCONF_LKUSER_lkoper=""
+LKCONF_LKUSER_lkguest=""
+# LKCONF_LICENSE_FILE is not set
+# LKCONF_steeleye_lkMD_ENABLE is not set
+LKCONF_steeleye_lkVMDK_ENABLE=y
+
+#
+# Recovery Kit Selection Menu
+#
+
+#
+# Application Suite
+#
+{{ lk_lkMQS }}
+{{ lk_lkSAP }}
+
+#
+# Networking
+#
+{{ lk_lkECC }}
+{{ lk_lkROUTE53 }}
+
+#
+# Database
+#
+{{ lk_lkDB2 }}
+{{ lk_lkHANA }}
+{{ lk_lkORA }}
+{{ lk_lkPGSQL }}
+{{ lk_lkSAPDB }}
+{{ lk_lkSQL }}
+{{ lk_lkSYBASE }}
+
+#
+# File Sharing
+#
+{{ lk_lkNFS }}
+{{ lk_SMB }}
+
+#
+# Mail Server
+#
+{{ lk_lkPOSTFIX }}
+
+#
+# Storage
+#
+{{ lk_lkDR }}
+{{ lk_lkLVM }}
+{{ lk_lkNAS }}
+
+#
+# Web Server
+#
+{{ lk_lkAPA }}
+# LKCONF_LKSTART is not set
+

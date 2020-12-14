@@ -1,0 +1,101 @@
+# ---------------------
+# Generic Settings
+# ---------------------
+
+# hostname settings
+ACTIVE_HOST={{ active_host_name }}
+STANDBY_HOST={{ standby_host_name }}
+{{ lk_setup_qw_host }}
+
+# select ARK
+{{ lk_setup_ark_datakeeper }}
+{{ lk_setup_ark_ip }}
+{{ lk_setup_ark_ec2 }}
+{{ lk_setup_ark_oracle_listener }}
+{{ lk_setup_ark_oracle }}
+
+# ---------------------
+# Communication Path Settings
+# ---------------------
+
+# remote command (root privilege) exec
+{{ lk_setup_remote_command }}
+{{ lk_setup_qw_remote_command }}
+# Commpath Settings
+# Priority 1 comm path IP Address
+ACTIVE_COMMPATH_1_IP_ADDR={{ active_host_ip_addr_commpath }}
+STANDBY_COMMPATH_1_IP_ADDR={{ standby_host_ip_addr_commpath }}
+# Priority 2 comm path IP Address (Optional, but strongy Recommended)
+{{ lk_setup_active_commpath_2_ip_addr }}
+{{ lk_setup_standby_commpath_2_ip_addr }}
+# QW comm path IP Address (Optional)
+{{ lk_setup_qw_commpath_1_ip_addr }}
+{{ lk_setup_qw_commpath_2_ip_addr }}
+
+# ---------------------
+# DataKeeper ARK Settings
+# ---------------------
+
+# DK_HIERARCHY : existing | new
+DK_HIERARCHY=existing
+
+# 'DK_HIERARCHY=new' settings
+# DK_DEVICE=/dev/xvdb1
+# DK_FSTYPE : ext3 | ext4 | xfs
+# DK_FSTYPE=xfs
+# 'DK_HIERARCHY=new' settings end
+
+# DK_MODE : synchronous | asynchronous
+DK_MODE=synchronous
+
+DK_MOUNT_POINT={{ oracle_data_dir }}
+DK_TAG=datarep-oradata
+DK_COMMPATH_IP_ADDR1=$ACTIVE_COMMPATH_1_IP_ADDR
+DK_COMMPATH_IP_ADDR2=$STANDBY_COMMPATH_1_IP_ADDR
+
+# ---------------------
+# IP ARK Settings
+# ---------------------
+VIP={{ lifekeeper_vip }}
+
+# --------------------
+# EC2 ARK Settings
+# --------------------
+# EC2_TYPE : RouteTable | ElasticIP
+{{ lk_setup_ec2_type }}
+# 'EC2_TYPE=RouteTable' settings
+{{ lk_setup_ec2_ip_resource_tag }}
+# 'EC2_TYPE=ElasticIP' settings
+{{ lk_setup_ec2_elastic_ip }}
+{{ lk_setup_ec2_dev }}
+
+# ---------------------
+# Oracle Listener ARK Settings
+# ---------------------
+LISTENER_CONFIG_PATH={{ oracle_home_dir }}/network/admin/listener.ora
+LISTENER_EXEC_PATH={{ oracle_home_dir }}/bin
+
+# LISTENER_PROTECTION : Full | Intermediate | Minimal
+LISTENER_PROTECTION=Full
+
+# LISTENER_RECOVERY : Standard | Optional
+LISTENER_RECOVERY=Standard
+
+LISTENER_RUN_USER=oracle
+LISTENER_NAME=LISTENER
+LISTENER_DEPEND_IP_ADDR=$VIP
+
+
+# ---------------------
+# Oracle ARK Settings
+# ---------------------
+ORACLE_RUN_USER=oracle
+ORACLE_STARTUP_COMMAND="echo 'startup;' | ORACLE_SID={{ oracle_sid }} sqlplus / as sysdba"
+ORACLE_SID={{ oracle_sid }}
+ORACLE_LISTENER=LISTENER
+
+# ORACLE_DB_USER : if not set, operation running OS user privileges.
+{{ lk_setup_oracle_db_user }}
+{{ lk_setup_oracle_db_password }}
+
+

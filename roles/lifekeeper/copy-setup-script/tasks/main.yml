@@ -1,0 +1,13 @@
+---
+- name: copy setup script
+  become: no
+  unarchive:
+    src: files/lifekeeper-setup.tar.gz
+    dest: ~/
+
+- name: copy setup config file
+  become: no
+  template:
+    src: lifekeeper-setupk.conf.j2
+    dest: ~/lifekeeper-setup/lifekeeper-setup.conf
+

@@ -1,0 +1,11 @@
+---
+# LifeKeeper Install options:
+lk_enable_qwk: "LKCONF_ENABLE_QWK=y"
+
+# LifeKeeper Resource setup script options:
+lk_setup_qw_host: "QW_HOST={{ qw_host_name }}"
+lk_setup_qw_remote_command: "QW_REMOTE_COMMAND=\"ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{ qw_os_user }}@$QW_HOST sudo\""
+lk_setup_qw_commpath_1_ip_addr: "QW_COMMPATH_1_IP_ADDR={{ qw_host_ip_addr_commpath }}"
+lk_setup_qw_commpath_2_ip_addr: "QW_COMMPATH_2_IP_ADDR={{ qw_host_ip_addr }}"
+
+

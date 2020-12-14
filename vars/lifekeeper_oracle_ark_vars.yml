@@ -1,0 +1,10 @@
+---
+# LifeKeeper Install options:
+# Oracle ARK
+lk_lkORA: "LKCONF_steeleye_lkORA=y"
+
+# LifeKeeper Resource setup script options:
+lk_setup_ark_oracle_listener: "ARK_ORACLE_LISTENER=Y"
+lk_setup_ark_oracle: "ARK_ORACLE=Y"
+
+

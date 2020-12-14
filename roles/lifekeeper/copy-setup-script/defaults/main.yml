@@ -1,0 +1,49 @@
+---
+# ---------------------
+# Generic Settings
+# ---------------------
+# hostname settings
+lk_setup_qw_host: "# QW_HOST is not set"
+# select ARK
+lk_setup_ark_datakeeper: "# ARK_DATAKEEPER is not set"
+lk_setup_ark_ip: "# ARK_IP is not set"
+lk_setup_ark_ec2: "# ARK_EC2 is not set"
+lk_setup_ark_oracle_listener: "# ARK_ORACLE_LISTENER is not set"
+lk_setup_ark_oracle: "# ARK_ORACLE is not set"
+
+# ---------------------
+# Communication Path Settings
+# ---------------------
+# remote command (root privilege) exec
+lk_setup_remote_command: "REMOTE_COMMAND=\"ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{ ansible_user }}@$STANDBY_HOST sudo\""
+lk_setup_qw_remote_command: "# QW_REMOTE_COMMAND is not set"
+# Commpath Settings
+lk_setup_active_commpath_2_ip_addr: "# ACTIVE_COMMPATH_2_IP_ADDR is not set"
+lk_setup_standby_commpath_2_ip_addr: "# STANDBY_COMMPATH_2_IP_ADDR is not set"
+lk_setup_qw_commpath_1_ip_addr: "# QW_COMMPATH_1_IP_ADDR is not set"
+lk_setup_qw_commpath_2_ip_addr: "# QW_COMMPATH_2_IP_ADDR is not set"
+
+# ---------------------
+# DataKeeper ARK Settings
+# ---------------------
+ 
+
+# --------------------
+# EC2 ARK Settings
+# --------------------
+lk_setup_ec2_type: "# EC2_TYPE is not set"
+lk_setup_ec2_ip_resource_tag: "# EC2_IP_RESOURCE_TAG is not set"
+lk_setup_ec2_elastic_ip: "# EC2_ELASTIC_IP is not set"
+lk_setup_ec2_dev: "# EC2_DEV is not set"
+
+# ---------------------
+# Oracle Listener ARK Settings
+# ---------------------
+
+# ---------------------
+# Oracle ARK Settings
+# ---------------------
+lk_setup_oracle_db_user: "# ORACLE_DB_USER is not set"
+lk_setup_oracle_db_password: "# ORACLE_DB_PASSWORD is not set"
+
+

@@ -1,0 +1,15 @@
+---
+ - name: run lifekeeper-setup script
+   shell: script -q -e -c "./lifekeeper-setup.sh" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ oracle_os_user }}/lifekeeper-setup"
+     creates: /root/lifekeeper-setup.DONE
+   register: lifekeeper_setup_result
+
+ - name: setup check
+   file:
+     path: /root/lifekeeper-setup.DONE
+     state: touch
+   when: lifekeeper_setup_result.rc == 0
+
+

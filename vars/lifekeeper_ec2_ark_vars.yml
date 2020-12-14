@@ -1,0 +1,12 @@
+---
+# LifeKeeper Install options:
+lk_hv_ec2: "LKCONF_HV_EC2=y"
+lk_lkECC: "LKCONF_steeleye_lkECC=y"
+
+# LifeKeeper Resource setup script options:
+lk_setup_ark_ec2: "ARK_EC2=Y"
+
+# EC2 ARK Settings
+lk_setup_ec2_type: "EC2_TYPE=\"RouteTable\""
+lk_setup_ec2_ip_resource_tag: "EC2_IP_RESOURCE_TAG=\"ip-$VIP\""
+

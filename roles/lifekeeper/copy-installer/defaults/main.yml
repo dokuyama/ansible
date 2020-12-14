@@ -1,0 +1,32 @@
+---
+lk_hv_vmware: "# LKCONF_HV_VMWARE is not set"
+lk_hv_ec2: "# LKCONF_HV_EC2 is not set"
+lk_HADR: "# LKCONF_HADR is not set"
+lk_enable_qwk: "# LKCONF_ENABLE_QWK is not set"
+# Recovery Kit Selection Menu
+# Application Suite
+lk_lkMQS: "# LKCONF_steeleye_lkMQS is not set"
+lk_lkSAP: "# LKCONF_steeleye_lkSAP is not set"
+# Networking
+lk_lkECC: "# LKCONF_steeleye_lkECC is not set"
+lk_lkROUTE53: "# LKCONF_steeleye_lkROUTE53 is not set"
+# Database
+lk_lkDB2: "# LKCONF_steeleye_lkDB2 is not set"
+lk_lkHANA: "# LKCONF_steeleye_lkHANA is not set"
+lk_lkORA: "# LKCONF_steeleye_lkORA is not set"
+lk_lkPGSQL: "# LKCONF_steeleye_lkPGSQL is not set"
+lk_lkSAPDB: "# LKCONF_steeleye_lkSAPDB is not set"
+lk_lkSQL: "# LKCONF_steeleye_lkSQL is not set"
+lk_lkSYBASE: "# LKCONF_steeleye_lkSYBASE is not set"
+# File Shareing
+lk_lkNFS: "# LKCONF_steeleye_lkNFS is not set"
+lk_SMB: "# LKCONF_steeleye_lkSMB is not set"
+# Mail Server
+lk_lkPOSTFIX: "# LKCONF_steeleye_lkPOSTFIX is not set"
+# Storage
+lk_lkDR: "# LKCONF_steeleye_lkDR is not set"
+lk_lkLVM: "# LKCONF_steeleye_lkLVM is not set"
+lk_lkNAS: "# LKCONF_steeleye_lkNAS is not set"
+# Web Server
+lk_lkAPA: "# LKCONF_steeleye_lkAPA is not set"
+
