@@ -1,6 +1,6 @@
 ---
 - name: tempolary mount oracle data disk
-  shell: "mount |grep {{ item.device }}{{ item.number }} || mount {{ item.device }}{{ item.number }} {{ oracle_data_dir }}"
+  shell: "mount |egrep '({{ item.device }}{{ item.number }}|/dev/md0)' || mount {{ item.device }}{{ item.number }} {{ oracle_data_dir }}"
   with_items: "{{ filesystem }}"
   ignore_errors: true
 

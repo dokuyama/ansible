@@ -1,15 +1,88 @@
 ---
- - name: run lifekeeper-setup script
-   shell: script -q -e -c "./lifekeeper-setup.sh" ~/lifekeeper-setup.log
+ - name: run lifekeeper-setup script precheck (Communication Path)
+   shell: script -a -q -e -c "./COMMON_COMMPATH.sh precheck" ~/lifekeeper-setup.log
    args:
-     chdir: "/home/{{ oracle_os_user }}/lifekeeper-setup"
-     creates: /root/lifekeeper-setup.DONE
-   register: lifekeeper_setup_result
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
 
- - name: setup check
-   file:
-     path: /root/lifekeeper-setup.DONE
-     state: touch
-   when: lifekeeper_setup_result.rc == 0
+ - name: run lifekeeper-setup script create (Communication Path)
+   shell: script -a -q -e -c "./COMMON_COMMPATH.sh create" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
 
+ - name: run lifekeeper-setup script precheck (Generic Lifekeeper Settings)
+   shell: script -a -q -e -c "./COMMON_SETTINGS.sh precheck" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+
+ - name: run lifekeeper-setup script precheck (DataKeeper)
+   shell: script -a -q -e -c "./ARK_DATAKEEPER.sh precheck" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_datakeeper == true
+
+ - name: run lifekeeper-setup script create (DataKeeper)
+   shell: script -a -q -e -c "./ARK_DATAKEEPER.sh create" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_datakeeper == true
+
+ - name: run lifekeeper-setup script precheck (IP ARK)
+   shell: script -a -q -e -c "./ARK_IP.sh precheck" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_ip_ark == true
+
+ - name: run lifekeeper-setup script create (IP ARK)
+   shell: script -a -q -e -c "./ARK_IP.sh create" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_ip_ark == true
+ 
+ - name: run lifekeeper-setup script precheck (EC2 ARK)
+   shell: script -a -q -e -c "./ARK_EC2.sh precheck" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_ip_ark == true and lk_resource_create_ec2_ark == true
+
+ - name: run lifekeeper-setup script create (EC2 ARK)
+   shell: script -a -q -e -c "./ARK_EC2.sh create" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_ip_ark == true and lk_resource_create_ec2_ark == true
+
+ - name: run lifekeeper-setup script precheck (Oracle Listener ARK)
+   shell: script -a -q -e -c "./ARK_ORACLE_LISTENER.sh precheck" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_oracle_ark == true
+
+ - name: run lifekeeper-setup script create (Oracle Listener ARK)
+   shell: script -a -q -e -c "./ARK_ORACLE_LISTENER.sh create" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_oracle_ark == true
+
+ - name: run lifekeeper-setup script precheck (Oracle ARK)
+   shell: script -a -q -e -c "./ARK_ORACLE.sh precheck" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_oracle_ark == true
+
+ - name: run lifekeeper-setup script create (Oracle ARK)
+   shell: script -a -q -e -c "./ARK_ORACLE.sh create" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_oracle_ark == true
+
+ - name: print messages
+   shell: |
+     echo "LifeKeeper GUI usage:"
+     echo "1. Setup your X-Window Server application. (like xming, mobaXterm and so on.)"
+     echo "2. Login to active host via bastion host, with X11 forwarding option (-Y)."
+     echo '   $ ssh -Y -i {{ ansible_ssh_private_key_file }} {{ ansible_ssh_extra_args }} root@{{ active_host_ip_addr }}'
+     echo "3. Run lkGUIapp."
+     echo "   # lkGUIapp &"
+   register: msg_str
+
+ - debug: var=msg_str.stdout_lines
 

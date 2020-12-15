@@ -4,7 +4,7 @@
 # ----------------------------------------
 bastion_os_user: ec2-user
 qw_os_user: ec2-user
-oracle_os_user: ec2-user
+lk_os_user: ec2-user
 
 # RedHat 7.8 (x86_64)
 bastion_host_ami_id: ami-038a794b902fa0afc

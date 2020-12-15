@@ -185,6 +185,9 @@
     - vars/oracle-clone-settings_vars.yml
     - vars/lifekeeper_generic_vars.yml
 
+#  environment:
+#      PATH: /sbin:/bin:/usr/sbin:/usr/bin:/opt/LifeKeeper/bin
+
   pre_tasks:
     - include_vars: vars/centos7-settings_vars.yml
       when: os_type == "CentOS7"

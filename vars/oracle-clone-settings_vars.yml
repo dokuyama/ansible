@@ -38,7 +38,7 @@ add_oracle_standby_instance:
    groups:
     - oracle_hosts
     - lk_hosts
-   ansible_user: "{{ oracle_os_user }}"
+   ansible_user: "{{ lk_os_user }}"
    ansible_ssh_private_key_file: "files/{{ aws_ec2_key_name }}.pem"
    ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i files/{{ aws_ec2_key_name }}.pem {{ bastion_os_user }}@{{ bastion_ip }} -W %h:%p\""
 

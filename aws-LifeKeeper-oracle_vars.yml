@@ -1,0 +1,131 @@
+---
+# ----------------------------------------
+# COMMON Setting
+# ----------------------------------------
+aws_cli_profile: lifekeeper
+aws_region: ap-northeast-1
+# OS Selection (select CentOS7 or RedHat7)
+os_type: CentOS7
+#os_type: RedHat7
+
+# oracle_hosts root Password string (if not defined, asking for password.)
+root_password: testpass!2020
+
+# ansible task selection
+do_oracle_install: true
+do_clone_oracle_instance: true
+do_lifekeeper_install: true
+do_lifekeeper_create_resource: true
+# LifeKeeper Resource setup script options:
+lk_resource_create_datakeeper: true
+lk_resource_create_ip_ark: true
+lk_resource_create_ec2_ark: true
+lk_resource_create_oracle_ark: true
+
+# Project prefix name
+# some tag name useing this prefix.
+proj_prefix: lk-ora
+
+# Network values
+ansible_run_from_cidr: 218.219.153.169/32
+lifekeeper_vip: 10.100.100.100
+active_host_ip_addr: 10.10.10.11
+standby_host_ip_addr: 10.10.11.11
+qw_host_ip_addr: 10.10.12.11
+active_host_ip_addr_commpath: 10.10.20.11
+active_host_commpath_netmask: 24
+standby_host_ip_addr_commpath: 10.10.21.11
+standby_host_commpath_netmask: 24
+qw_host_ip_addr_commpath: 10.10.22.11
+qw_host_commpath_netmask: 24
+
+aws_vpc_name: "{{ proj_prefix }}-vpc"
+aws_vpc_cidr_block: 10.10.0.0/16
+
+public_subnet_cidr: 10.10.0.0/24
+private_subnet1_cidr: 10.10.10.0/24
+private_subnet2_cidr: 10.10.11.0/24
+private_subnet3_cidr: 10.10.12.0/24
+commpath_subnet1_cidr: 10.10.20.0/24
+commpath_subnet2_cidr: 10.10.21.0/24
+commpath_subnet3_cidr: 10.10.22.0/24
+
+bastion_host_name: "{{ proj_prefix }}-bastion"
+bastion_host_instance_type: t2.micro
+bastion_host_volume_size: 10
+active_host_name: "{{ proj_prefix }}-oracle01"
+active_host_instance_type: t2.medium
+active_host_volume_size1: 40
+# Oracle data disk size
+active_host_volume_size2: 20
+standby_host_name: "{{ proj_prefix }}-oracle02"
+standby_host_instance_type: t2.medium
+qw_host_name: "{{ proj_prefix }}-qw"
+qw_host_instance_type: t2.micro
+qw_host_volume_size: 10
+
+timezone: Asia/Tokyo
+
+# publuc access security group
+# (apply to bastion host)
+aws_ec2_security_groups:
+ - name: "{{ proj_prefix }}-allow_ssh"
+   desc: allow ssh connection
+   rules: 
+     - proto: tcp
+       ports: 
+         - 22
+       cidr_ip: "{{ ipify_public_ip }}/32"
+     - proto: tcp
+       ports: 
+         - 22
+       cidr_ip: "{{ ansible_run_from_cidr }}"
+   # other rule sample
+   # - proto: tcp
+   #   ports:
+   #     - 88
+   #     - 443
+   #   cidr_ip: "{{ another_ip }}"
+
+
+# ----------------------------------------
+# Oracle Settings
+# ----------------------------------------
+orainventory_dir: /u01/app/oraInventory
+oracle_home_dir:  /u01/app/oracle/product/19.3.0/dbhome_1
+oracle_data_dir: /u01/app/oracle/oradata
+oracle_sid: orcl
+
+# ----------------------------------------
+# Oracle Installer Settings
+# ----------------------------------------
+# !!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!
+# If set do_oracle_install true
+# you MUST put files/oracle_installer_file and files/oracle_installer_rsp_file
+# !!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!
+oracle_installer_file: LINUX.X64_193000_db_home.zip
+# you MUST edit Password on db.rsp file
+oracle_installer_rsp_file: db.rsp
+
+# ----------------------------------------
+# LifeKeeper setup
+# ----------------------------------------
+# !!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!
+# If set do_lifekeeper_install true
+# you MUST put lifekeeper_iso_file and lifekeeper_license_file
+# and lifekeeper-setup.conf
+# !!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!
+lifekeeper_iso_file: LKL_V951_100620.iso
+lifekeeper_license_file: lifekeeper-license.txt
+lifekeeper_setup_conf_file: lifekeeper_installer.conf
+
+# LifeKeeper Install options:
+lk_setup_enable_qwk: true
+lk_setup_enable_datakeeper: true
+lk_setup_create_ec2_resource: true
+lk_setup_create_oracle_resource: true
+
+# ORACLE_DB_USER : if not set, operation running OS user privileges
+# lk_setup_oracle_db_user: system
+# lk_setup_oracle_db_password: password
+
