@@ -6,7 +6,7 @@
   when: lk_installer_config_change.changed
 
 - name: install lifekeeper
-  shell: script -q -e -c "~/sps_installer/setup -f ~/{{ lifekeeper_setup_conf_file }} -q y" ~/lifekeeper_install.log
+  shell: script -q -e -c "~/sps_installer/setup -f ~/lifekeeper_installer.conf -q y" ~/lifekeeper_install.log
   args:
     creates: /root/lifekeeper-install.DONE
   register: lifekeeper_install_result

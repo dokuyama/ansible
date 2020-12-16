@@ -12,7 +12,7 @@
 - name: copy LifeKeeper installer conf file
   template:
     src: "lifekeeper_installer.conf.j2"
-    dest: "~/{{ lifekeeper_setup_conf_file }}"
+    dest: "~/lifekeeper_installer.conf"
   register: lk_installer_config_change
 
 - name: copy LifeKeeper setup file
