@@ -102,7 +102,7 @@ ec2:
    ami_id: "{{ bastion_host_ami_id }}"
    security_groups:
     - default
-    - "{{ proj_prefix }}-allow_ssh"
+    - "{{ proj_prefix }}-manage"
    subnet_name: "{{ public_subnet_name }}"
    volumes:
     - device_name: /dev/sda1
