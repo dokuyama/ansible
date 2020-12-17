@@ -19,11 +19,11 @@ oracle_standby_instance:
     - device_name: /dev/sda1
       ebs:
         volume_size: "{{ active_host_volume_size1 }}"
-        delete_on_termination: false
+        delete_on_termination: true
     - device_name: /dev/xvdb
       ebs:
         volume_size: "{{ active_host_volume_size2 }}"
-        delete_on_termination: false
+        delete_on_termination: true
    private_ip: "{{ standby_host_ip_addr }}"
    source_dest_check: false
    assign_public_ip: false
