@@ -26,8 +26,10 @@
   failed_when: false
 
 - name: install lifekeeper license
-  shell: /opt/LifeKeeper/bin/lkkeyins ~/{{ lifekeeper_license_file }}
+  shell: /opt/LifeKeeper/bin/lkkeyins ~/{{ item }}
   when: check_lisense_file.rc == 2
+  with_items: 
+   - "{{ license_file }}"
  
 - name: add PATH, MANPATH to /root/.bash_profile
   lineinfile:

@@ -8,5 +8,5 @@
     region: "{{ aws_region }}"
     rules: "{{ item.rules }}"
     tags: { "Name": "{{ item.name }}" }
-  with_items: "{{ aws_ec2_security_groups }}"
+  with_items: "{{ security_group }}"
 

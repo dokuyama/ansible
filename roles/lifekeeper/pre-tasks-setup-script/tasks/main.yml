@@ -16,4 +16,6 @@
     dest: ~/.ssh/authorized_keys
     remote_src: yes
     mode: 0600
+  # standby host issue..
+  ignore_errors: true
 

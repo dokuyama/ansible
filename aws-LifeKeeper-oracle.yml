@@ -23,7 +23,7 @@
     - aws/iam/role/create
     - aws/iam/policy/create
     - aws/ec2/key/create
-    - aws/ec2/security-group/create
+    - { role: aws/ec2/security-group/create, security_group: "{{ aws_ec2_security_groups }}" }
     - aws/ec2/instance/create
     - aws/ec2/eni/create
     - { role: aws/vpc/route-tables/create, route_tables: "{{ private_route_tables }}" }
@@ -168,8 +168,8 @@
    - { role: linux/set-hostname, when: do_lifekeeper_install == true }
    - { role: linux/sysctl, sysctl: { name: "net.ipv4.conf.all.rp_filter", value: "2", state: "present" }, when: do_lifekeeper_install == true }
    - { role: linux/sysctl, sysctl: { name: "net.ipv4.conf.default.rp_filter", value: "2", state: "present" }, when: do_lifekeeper_install == true }
-   - { role: lifekeeper/copy-installer, when: do_lifekeeper_install == true }
-   - { role: lifekeeper/install-lifekeeper, when: do_lifekeeper_install == true }
+   - { role: lifekeeper/copy-installer, license_file: "{{ lifekeeper_license_files }}", when: do_lifekeeper_install == true }
+   - { role: lifekeeper/install-lifekeeper, license_file: "{{ lifekeeper_license_files }}",  when: do_lifekeeper_install == true }
    - { role: linux/copy-ssh-key, target_user: "{{ ansible_user }}", when: do_lifekeeper_install == true }
    - { role: linux/copy-ssh-key, target_user: "root", when: do_lifekeeper_install == true }
    - { role: lifekeeper/pre-tasks-setup-script, when: do_lifekeeper_install == true}

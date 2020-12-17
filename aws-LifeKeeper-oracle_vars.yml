@@ -11,8 +11,8 @@ proj_prefix: lk-ora
 aws_cli_profile: lifekeeper
 aws_region: ap-northeast-1
 # OS Selection (select CentOS7 or RedHat7)
-#os_type: CentOS7
-os_type: RedHat7
+os_type: CentOS7
+#os_type: RedHat7
 
 # oracle_hosts root Password string (if not defined, asking for password.)
 root_password: testpass!2020
@@ -114,7 +114,8 @@ oracle_installer_rsp_file: db.rsp
 # and lifekeeper-setup.conf
 # !!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!
 lifekeeper_iso_file: LKL_V951_100620.iso
-lifekeeper_license_file: lifekeeper-license.txt
+lifekeeper_license_files:
+ - lifekeeper-license.txt
 
 # LifeKeeper Install options:
 lk_setup_enable_qwk: true

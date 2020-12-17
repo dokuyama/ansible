@@ -6,8 +6,10 @@
 
 - name: copy LifeKeeper license file
   copy:
-    src: "files/{{ lifekeeper_license_file }}"
-    dest: "~/{{ lifekeeper_license_file }}"
+    src: "files/{{ item }}"
+    dest: "~/{{ item }}"
+  with_items:
+   - "{{ license_file }}"
 
 - name: copy LifeKeeper installer conf file
   template:
