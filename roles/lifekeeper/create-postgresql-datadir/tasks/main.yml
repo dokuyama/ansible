@@ -1,0 +1,39 @@
+---
+- name: move postgresql data dir to DataKeeper volume
+  shell: mv "{{ postgresql_rpm_data_dir }}" "{{ postgresql_data_dir }}"
+  args:
+    creates: "{{ postgresql_data_dir }}"
+
+- name: create symlink to "{{ postgresql_rpm_data_dir }}"
+  file:
+    src: "{{ postgresql_data_dir }}"
+    dest: "{{ postgresql_rpm_data_dir }}"
+    state: link
+
+- name: copy customized postgresql.conf
+  template:
+    src: files/postgresql.conf.j2
+    dest: "{{ postgresql_data_dir }}/data/postgresql.conf"
+    mode: 0600
+    owner: postgres
+    group: postgres
+    backup: true
+  when: customize_postgresql_conf == true
+
+- name: copy customized pg_hba.conf
+  template:
+    src: files/pg_hba.j2
+    dest: "{{ postgresql_data_dir }}/data/pg_hba.conf"
+    mode: 0600
+    owner: postgres
+    group: postgres
+    backup: true
+  when: customize_pg_hba_conf == true
+
+- name: create postgresql data
+  become: yes
+  become_user: postgres
+  shell: "{{ postgesql_initdb_command }}"
+  args:
+    creates: "{{ postgresql_data_dir }}/data/base"
+

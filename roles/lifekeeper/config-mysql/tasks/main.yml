@@ -1,0 +1,20 @@
+---
+- name: start mysql
+  service:
+    name: "{{ mysql_service_name }}"
+    state: started
+
+- name: check mysqladmin password
+  shell: mysqladmin -u "{{ mysqladmin_user }}" ping | grep "mysqld is alive"
+  register: result
+  ignore_errors: true
+
+- name: set mysqladmin password
+  shell: mysqladmin -u "{{ mysqladmin_user }}"  password "{{ mysqladmin_password }}"
+  when: result.rc == 0
+
+- name: stop mysql
+  service:
+    name: "{{ mysql_service_name }}"
+    state: stopped
+

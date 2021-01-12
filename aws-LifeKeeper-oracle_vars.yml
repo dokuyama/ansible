@@ -116,6 +116,7 @@ oracle_installer_rsp_file: db.rsp
 lifekeeper_iso_file: LKL_V951_100620.iso
 lifekeeper_license_files:
  - lifekeeper-license.txt
+datakeeper_mount_dir: "{{ oracle_data_dir }}"
 
 # LifeKeeper Install options:
 lk_setup_enable_qwk: true
@@ -123,6 +124,7 @@ lk_setup_enable_datakeeper: true
 lk_setup_create_ec2_resource: true
 lk_setup_create_oracle_resource: true
 
+lk_setup_dk_tag: "DK_TAG=datarep-oradata"
 # ORACLE_DB_USER : if not set, operation running OS user privileges
 # lk_setup_oracle_db_user: system
 # lk_setup_oracle_db_password: password

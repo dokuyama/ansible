@@ -2,6 +2,8 @@
 # LifeKeeper Resource setup script options:
 lk_setup_ark_ip: "ARK_IP=Y"
 lk_setup_remote_command: "REMOTE_COMMAND=\"ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{ bastion_os_user }}@$STANDBY_HOST sudo\""
+lk_setup_active_host_ip_addr_commpath: ACTIVE_COMMPATH_1_IP_ADDR={{ active_host_ip_addr_commpath }}
+lk_setup_standby_host_ip_addr_commpath: STANDBY_COMMPATH_1_IP_ADDR={{ standby_host_ip_addr_commpath }}
 lk_setup_active_commpath_2_ip_addr: ACTIVE_COMMPATH_2_IP_ADDR={{ active_host_ip_addr }}
 lk_setup_standby_commpath_2_ip_addr: STANDBY_COMMPATH_2_IP_ADDR={{ standby_host_ip_addr }}
 

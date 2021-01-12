@@ -40,7 +40,7 @@ active_host_port1:
     port_fixed_ip:
       - ip_address: "{{ active_host_ip_addr }}"
     allowed_address_pairs:
-      - ip_address: "{{ lk_vip }}"
+      - ip_address: "{{ lifekeeper_vip }}"
     security_group:
       - default
     state: present
@@ -63,7 +63,7 @@ standby_host_port1:
     port_fixed_ip:
       - ip_address: "{{ standby_host_ip_addr }}"
     allowed_address_pairs:
-      - ip_address: "{{ lk_vip }}"
+      - ip_address: "{{ lifekeeper_vip }}"
     security_group:
       - default
     state: present

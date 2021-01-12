@@ -74,6 +74,18 @@
      chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
    when: lk_resource_create_oracle_ark == true
 
+ - name: run lifekeeper-setup script prechek (MySQL ARK)
+   shell: script -a -q -e -c "./ARK_MYSQL.sh precheck" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_ip_ark == true and lk_resource_create_mysql_ark == true
+
+ - name: run lifekeeper-setup script create (MySQL ARK)
+   shell: script -a -q -e -c "./ARK_MYSQL.sh create" ~/lifekeeper-setup.log
+   args:
+     chdir: "/home/{{ ansible_user }}/lifekeeper-setup"
+   when: lk_resource_create_ip_ark == true and lk_resource_create_mysql_ark == true
+
  - name: print messages
    shell: |
      echo "LifeKeeper GUI usage:"

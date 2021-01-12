@@ -1,0 +1,8 @@
+---
+# LifeKeeper Resource setup script options:
+lk_resource_create_datakeeper: false
+lk_resource_create_ip_ark: false
+lk_resource_create_ec2_ark: false
+lk_resource_create_oracle_ark: false
+lk_resource_create_mysql_ark: false
+

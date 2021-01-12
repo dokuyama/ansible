@@ -13,6 +13,8 @@ STANDBY_HOST={{ standby_host_name }}
 {{ lk_setup_ark_ec2 }}
 {{ lk_setup_ark_oracle_listener }}
 {{ lk_setup_ark_oracle }}
+{{ lk_setup_ark_mysql }}
+{{ lk_setup_ark_postgresql }}
 
 # ---------------------
 # Communication Path Settings
@@ -23,8 +25,8 @@ STANDBY_HOST={{ standby_host_name }}
 {{ lk_setup_qw_remote_command }}
 # Commpath Settings
 # Priority 1 comm path IP Address
-ACTIVE_COMMPATH_1_IP_ADDR={{ active_host_ip_addr_commpath }}
-STANDBY_COMMPATH_1_IP_ADDR={{ standby_host_ip_addr_commpath }}
+{{ lk_setup_active_host_ip_addr_commpath }}
+{{ lk_setup_standby_host_ip_addr_commpath }}
 # Priority 2 comm path IP Address (Optional, but strongy Recommended)
 {{ lk_setup_active_commpath_2_ip_addr }}
 {{ lk_setup_standby_commpath_2_ip_addr }}
@@ -48,8 +50,8 @@ DK_HIERARCHY=existing
 # DK_MODE : synchronous | asynchronous
 DK_MODE=synchronous
 
-DK_MOUNT_POINT={{ oracle_data_dir }}
-DK_TAG=datarep-oradata
+DK_MOUNT_POINT={{ datakeeper_mount_dir }}
+{{ lk_setup_dk_tag }}
 DK_COMMPATH_IP_ADDR1=$ACTIVE_COMMPATH_1_IP_ADDR
 DK_COMMPATH_IP_ADDR2=$STANDBY_COMMPATH_1_IP_ADDR
 
@@ -98,4 +100,14 @@ ORACLE_LISTENER=LISTENER
 {{ lk_setup_oracle_db_user }}
 {{ lk_setup_oracle_db_password }}
 
+
+# ---------------------
+# MySQL ARK Settings
+# ---------------------
+{{ lk_setup_mysql_tag }}
+{{ lk_setup_mysql_cnf_dir }}
+{{ lk_setup_mysql_bin_dir }}
+{{ lk_setup_mysqladmin_user }}
+{{ lk_setup_mysqladmin_password }}
+{{ lk_setup_mysql_service_name }}
 

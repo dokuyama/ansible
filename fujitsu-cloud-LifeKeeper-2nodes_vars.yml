@@ -3,7 +3,19 @@
 ## Generic roles
 ##
 
+# OS Selection
+os_type: CentOS8
+
+# ansible task selection
 do_lifekeeper_install: true
+do_mysql_install: true
+do_postgresql_install: true
+do_lifekeeper_create_resource: true
+# LifeKeeper Resource setup script options:
+lk_resource_create_datakeeper: true
+lk_resource_create_ip_ark: true
+lk_resource_create_mysql_ark: true
+
 
 bastion_host_name: LK-TEST-bastion
 active_host_name: LK-TEST-db01
@@ -12,7 +24,7 @@ bastion_os_user: k5user
 lk_os_user: k5user
 timezone: Asia/Tokyo
 root_password: testpass!2020
-lk_vip: 10.0.111.200
+lifekeeper_vip: 10.0.111.200
 lk_anti_affinity_server_group:
  - { server_group_name: "lk-anti-affinity", policies: "anti-affinity", state: "present" }
 
@@ -58,6 +70,27 @@ standby_host_ip_addr: 10.0.111.102
 standby_data_volume:
   - { volume_name: "{{ standby_host_name }}-data-volume", size: 30, state: "present", server: "{{ standby_host_name }}", device_name: "/dev/vdb" }
 
+# ----------------------------------------
+# MySQL settings
+# ----------------------------------------
+mysql_rpm_name: "mariadb-server"
+mysql_rpm_data_dir: "/var/lib/mysql"
+mysql_data_dir: "{{ datakeeper_mount_dir }}/mysql"
+customize_mysql_my_cnf: true
+mysql_service_name: "mariadb"
+mysqladmin_user: "root"
+mysqladmin_password: "testpass2021"
+mysql_os_user: "mysql"
+
+# ----------------------------------------
+# PostgreSQL settings
+# ----------------------------------------
+postgresql_rpm_name: "postgresql-server"
+postgresql_rpm_data_dir: "/var/lib/pgsql"
+postgresql_data_dir: "{{ datakeeper_mount_dir }}/pgsql"
+customize_postgresql_conf: false
+customize_pg_hba_conf: false
+postgesql_initdb_command: "initdb -D {{ postgresql_data_dir }}/data --encoding=UTF-8 --no-locale"
 
 # ----------------------------------------
 # LifeKeeper setup
@@ -68,8 +101,17 @@ standby_data_volume:
 # and lifekeeper-setup.conf
 # !!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!
 lifekeeper_iso_file: LKL_V951_100620.iso
-lifekeeper_license_file: lifekeeper-license.txt
+lifekeeper_license_files:
+ - lifekeeper-license.txt
 lifekeeper_setup_conf_file: lifekeeper_installer.conf
+lk_setup_enable_qwk: false
+lk_setup_enable_datakeeper: true
+lk_setup_create_ec2_resource: false
+lk_setup_create_oracle_resource: false
+
+# DataKeeper directory
+datakeeper_mount_dir: /data
+
 # LifeKeeper Install options:
 # DataKeeper
 lk_HADR: "LKCONF_HADR=y"
@@ -80,4 +122,25 @@ lk_lkPGSQL: "LKCONF_steeleye_lkPGSQL=y"
 lk_lkSQL: "LKCONF_steeleye_lkSQL=y"
 # Apache ARK
 lk_lkAPA: "LKCONF_steeleye_lkAPA=y"
+
+# LifeKeeper Setting script
+lk_setup_ark_ip: "ARK_IP=Y"
+lk_setup_active_host_ip_addr_commpath: "ACTIVE_COMMPATH_1_IP_ADDR={{ active_host_ip_addr }}"
+lk_setup_standby_host_ip_addr_commpath: "STANDBY_COMMPATH_1_IP_ADDR={{ standby_host_ip_addr }}"
+lk_setup_active_commpath_2_ip_addr: "# ACTIVE_COMMPATH_2_IP_ADDR is not set"
+lk_setup_standby_commpath_2_ip_addr: "# STANDBY_COMMPATH_2_IP_ADDR is not set"
+lk_setup_dk_tag: "DK_TAG=datarep-data"
+
+# MySQL Settings
+lk_setup_ark_mysql: true
+lk_setup_mysql_tag: "MYSQL_TAG=mysql"
+lk_setup_mysql_cnf_dir: "MYSQL_CNF_DIR=/etc"
+lk_setup_mysql_bin_dir: "MYSQL_BIN_DIR=/usr/bin"
+lk_setup_mysqladmin_user: "MYSQLADMIN_USER={{ mysqladmin_user }}"
+lk_setup_mysqladmin_password: "MYSQLADMIN_PASSWORD={{ mysqladmin_password }}"
+lk_setup_mysql_service_name: "MYSQL_SERVICE_NAME={{ mysql_service_name }}"
+
+# PostgreSQL Settings
+lk_setup_ark_postgresql: true
+
 

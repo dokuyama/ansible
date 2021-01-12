@@ -1,0 +1,10 @@
+---
+- name: create DataKeeper mount direcotry
+  file:
+    path: "{{ datakeeper_mount_dir }}"
+    state: directory
+
+- name: tempolary mount DataKeeper data disk
+  shell: "mount |egrep '({{ item.device }}{{ item.number }}|/dev/md0)' || mount {{ item.device }}{{ item.number }} {{ datakeeper_mount_dir }}"
+  with_items: "{{ filesystem }}"
+
