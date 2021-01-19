@@ -5,19 +5,15 @@
 
 # VPC Subnet
 public_subnet_name: "{{ proj_prefix }}-public"
-public_subnet_az: ap-northeast-1a
 private_subnet1_name: "{{ proj_prefix }}-private1"
-private_subnet1_az: ap-northeast-1a
 private_subnet2_name: "{{ proj_prefix }}-private2"
-private_subnet2_az: ap-northeast-1c
 private_subnet3_name: "{{ proj_prefix }}-private3"
-private_subnet3_az: ap-northeast-1d
 commpath_subnet1_name: "{{ proj_prefix }}-commpath1"
-commpath_subnet1_az: ap-northeast-1a
+commpath_subnet1_az: "{{ private_subnet1_az }}"
 commpath_subnet2_name: "{{ proj_prefix }}-commpath2"
-commpath_subnet2_az: ap-northeast-1c
+commpath_subnet2_az: "{{ private_subnet2_az }}"
 commpath_subnet3_name: "{{ proj_prefix }}-commpath3"
-commpath_subnet3_az: ap-northeast-1d
+commpath_subnet3_az: "{{ private_subnet3_az }}"
 
 aws_vpc_subnets:
  - { name: "{{ public_subnet_name }}", az: "{{ public_subnet_az }}", cidr: "{{ public_subnet_cidr }}" }

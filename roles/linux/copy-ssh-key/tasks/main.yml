@@ -6,6 +6,7 @@
     path: ~/.ssh
     state: directory
     mode: '0700'
+    backup: true
 
 - name: copy ssh key file to server
   become: yes

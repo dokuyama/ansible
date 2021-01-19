@@ -14,7 +14,7 @@ aws_region: ap-northeast-1
 os_type: CentOS7
 #os_type: RedHat7
 
-# oracle_hosts root Password string (if not defined, asking for password.)
+# lifekeeper hosts root Password string (if not defined, asking for password.)
 root_password: testpass!2020
 
 # ansible task selection
@@ -32,10 +32,22 @@ lk_resource_create_oracle_ark: true
 aws_vpc_name: "{{ proj_prefix }}-vpc"
 aws_vpc_cidr_block: 10.10.0.0/16
 
+# bastion host network
 public_subnet_cidr: 10.10.0.0/24
+public_subnet_az: ap-northeast-1a
+
+# lifekeeper active host network
 private_subnet1_cidr: 10.10.10.0/24
+private_subnet1_az: ap-northeast-1a
+
+# lifekeeper standby host network
 private_subnet2_cidr: 10.10.11.0/24
+private_subnet2_az: ap-northeast-1c
+
+# lifekeeper quorum/witness host network
 private_subnet3_cidr: 10.10.12.0/24
+private_subnet3_az: ap-northeast-1d
+
 commpath_subnet1_cidr: 10.10.20.0/24
 commpath_subnet2_cidr: 10.10.21.0/24
 commpath_subnet3_cidr: 10.10.22.0/24

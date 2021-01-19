@@ -15,6 +15,7 @@
     owner: oracle
     group: oinstall
     remote_src: yes
+    backup: true
 
 - name: make oraInventory directory
   file:
@@ -50,5 +51,5 @@
       export ORACLE_HOME={{ oracle_home_dir }}
       export PATH=$PATH:$ORACLE_HOME/bin
       export ORACLE_SID={{ oracle_sid }}
-
+    backup: true
 

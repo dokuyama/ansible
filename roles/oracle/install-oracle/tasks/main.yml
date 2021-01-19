@@ -35,8 +35,8 @@
 
 - name: root script
   shell: >
-    /u01/app/oraInventory/orainstRoot.sh;
-    /u01/app/oracle/product/19.3.0/dbhome_1/root.sh;
+    "{{ orainventory_dir }}/orainstRoot.sh";
+    "{{ oracle_home_dir }}/root.sh";
 
 - name: db exec Config Tools
   shell: "{{ oracle_home_dir }}/runInstaller -silent -executeConfigTools -responseFile /home/oracle/{{ oracle_installer_rsp_file }}"
