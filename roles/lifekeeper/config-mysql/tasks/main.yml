@@ -1,20 +1,38 @@
 ---
+- name: check mysql lifekeeper configured
+  shell: "/opt/LifeKeeper/bin/lkcli status -e|grep mysql"
+  register: mysql_status
+  ignore_errors: true
+
 - name: start mysql
   service:
     name: "{{ mysql_service_name }}"
     state: started
+  when: mysql_status.rc == 1
 
-- name: check mysqladmin password
-  shell: mysqladmin -u "{{ mysqladmin_user }}" ping | grep "mysqld is alive"
+- name: check mysql root password is unset
+#  shell: mysqladmin -u "{{ mysqladmin_user }}" ping | grep "mysqld is alive"
+  shell: echo "select sysdate();"| mysql -uroot
   register: result
   ignore_errors: true
+  when: mysql_status.rc == 1
 
-- name: set mysqladmin password
-  shell: mysqladmin -u "{{ mysqladmin_user }}"  password "{{ mysqladmin_password }}"
+- name: set mysqladmin password, if password is unset
+  shell: mysqladmin -u "{{ mysqladmin_user }}" password "{{ mysqladmin_password }}"
   when: result.rc == 0
+  when: mysql_status.rc == 1
+
+- name: copy customized my.cnf
+  template:
+    src: files/my.cnf.j2
+    dest: /etc/my.cnf
+    mode: 0644
+    backup: true
+  when: customize_mysql_my_cnf == true
 
 - name: stop mysql
   service:
     name: "{{ mysql_service_name }}"
     state: stopped
+  when: mysql_status.rc == 1
 

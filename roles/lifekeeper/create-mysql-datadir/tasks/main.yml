@@ -10,14 +10,6 @@
    dest: "{{ mysql_rpm_data_dir }}"
    state: link
 
-- name: copy customized my.cnf
-  template:
-    src: files/my.cnf.j2
-    dest: /etc/my.cnf
-    mode: 0644
-    backup: true
-  when: customize_mysql_my_cnf == true
-
 - name: create mysql data
   become: yes
   become_user: mysql

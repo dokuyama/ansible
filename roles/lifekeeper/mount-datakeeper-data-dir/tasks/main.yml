@@ -4,7 +4,13 @@
     path: "{{ datakeeper_mount_dir }}"
     state: directory
 
+- name: check datakeeper setting
+  shell: "/opt/LifeKeeper/bin/lkcli status -e|grep /data"
+  register: dk_status
+  ignore_errors: true
+
 - name: tempolary mount DataKeeper data disk
   shell: "mount |egrep '({{ item.device }}{{ item.number }}|/dev/md0)' || mount {{ item.device }}{{ item.number }} {{ datakeeper_mount_dir }}"
   with_items: "{{ filesystem }}"
+  when: dk_status.rc == 1
 

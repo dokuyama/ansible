@@ -68,6 +68,27 @@ standby_host_port1:
       - default
     state: present
 
+# lk qw node settings
+qw_host:
+  - name: "{{ qw_host_name }}"
+    auto_ip: no
+    volume_size: "{{ qw_host_volume_size }}"
+    volume_image: "{{ qw_host_volume_image }}"
+    server_flavor: "{{ qw_host_server_flavor }}"
+    nics:
+      - "port-name=qw-port1"
+    security_group:
+      - default
+    scheduler_hints: { group: "{{ _server_group.results[0].id }}" }
+qw_host_port1:
+  - port_name: "qw-port1"
+    device_owner: compute:jp-east-3a
+    port_fixed_ip:
+      - ip_address: "{{ qw_host_ip_addr }}"
+    security_group:
+      - default
+    state: present
+
 # add to Inventory
 add_inventory_hosts:
  - instance_name: "{{ bastion_host_name }}"
@@ -80,6 +101,7 @@ add_inventory_hosts:
    groups:
     - lk_hosts
     - lk_active
+    - db_hosts
    ansible_user: "{{ lk_os_user }}"
    ansible_ssh_private_key_file: "{{ keypair_private_key_file_path }}"
    ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ keypair_private_key_file_path }} {{ bastion_os_user }}@{{ bastion_ip }} -W %h:%p\""
@@ -88,6 +110,15 @@ add_inventory_hosts:
    groups:
     - lk_hosts
     - lk_standby
+    - db_hosts
+   ansible_user: "{{ lk_os_user }}"
+   ansible_ssh_private_key_file: "{{ keypair_private_key_file_path }}"
+   ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ keypair_private_key_file_path }} {{ bastion_os_user }}@{{ bastion_ip }} -W %h:%p\""
+
+ - instance_name: "{{ qw_host_name }}"
+   groups:
+    - lk_hosts
+    - lk_qw
    ansible_user: "{{ lk_os_user }}"
    ansible_ssh_private_key_file: "{{ keypair_private_key_file_path }}"
    ansible_ssh_extra_args: "-t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ keypair_private_key_file_path }} {{ bastion_os_user }}@{{ bastion_ip }} -W %h:%p\""

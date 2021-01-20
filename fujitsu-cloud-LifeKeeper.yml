@@ -2,7 +2,7 @@
 - hosts: localhost
   gather_facts: no
   vars_files:
-    - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+    - fujitsu-cloud-LifeKeeper_vars.yml
     - vars/fujitsu-cloud-settings_vars.yml
 
   roles:
@@ -20,12 +20,20 @@
     - { role: fujitsu_cloud/compute/server, server_name: "{{ bastion_host }}" }
     - { role: fujitsu_cloud/network/port, port_lists: "{{ active_host_port1 }}" }
     - { role: fujitsu_cloud/compute/server, server_name: "{{ active_host }}" }
+    - { role: fujitsu_cloud/network/port, port_lists: "{{ qw_host_port1 }}", when: lk_setup_enable_qwk == true }
+    - { role: fujitsu_cloud/compute/server, server_name: "{{ qw_host }}", when: lk_setup_enable_qwk == true }
+
+# ssh wait
+- hosts: bastion_hosts
+  gather_facts: no
+  roles: 
+   - generic/check-ssh-port
 
 - hosts: bastion_hosts
   gather_facts: yes
   become: true
   vars_files:
-    - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+    - fujitsu-cloud-LifeKeeper_vars.yml
     - vars/fujitsu-cloud-settings_vars.yml
 
   roles:
@@ -40,17 +48,22 @@
    - linux/set-timezone
    - linux/set-hostname
 
+# ssh wait
+- hosts: lk_hosts
+  gather_facts: no
+  roles: 
+   - generic/check-ssh-port
+
 # OS baseic configuration
 - hosts: lk_hosts
   gather_facts: yes
   become: true
   vars_files:
-   - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+   - fujitsu-cloud-LifeKeeper_vars.yml
    - vars/fujitsu-cloud-settings_vars.yml
    - vars/fujitsu-cloud-os-settings_vars.yml
 
   roles: 
-   - generic/check-ssh-port
    - { role: linux/yum, rpms: { name: "@x11", state: "latest" }, when: ansible_distribution_major_version == "7" }
    - { role: linux/yum, rpms: { name: "@Server with GUI", state: "latest" }, when: ansible_distribution_major_version == "8" }
    - { role: linux/set-timezone, when: timezone is defined }
@@ -60,21 +73,11 @@
    - { role: linux/systemd, systemd_service: { name: "firewalld", enabled: false, state: "stopped" } }
    - linux/swapfile/create
    - linux/set-root-password
-  # datakeeper settings
-   - { role: linux/parted, partition: "{{ datakeeper_partition }}" }
-   - { role: linux/filesystem, filesystem: "{{ datakeeper_partition }}" }
-   - { role: lifekeeper/mount-datakeeper-data-dir, filesystem: "{{ datakeeper_partition }}" }
-  # mysql
-   - { role: linux/yum, rpms: { name: "{{ mysql_rpm_name }}", state: "latest" }, when: do_mysql_install == true }
-   - { role: lifekeeper/create-mysql-datadir, when: do_mysql_install == true }
-  # postgresql
-   - { role: linux/yum, rpms: { name: "{{ postgresql_rpm_name }}", state: "latest" }, when: do_postgresql_install == true }
-   - { role: lifekeeper/create-postgresql-datadir, when: do_postgresql_install == true }
 
 - hosts: localhost
   gather_facts: no
   vars_files:
-    - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+    - fujitsu-cloud-LifeKeeper_vars.yml
     - vars/fujitsu-cloud-settings_vars.yml
 
   roles:
@@ -86,12 +89,33 @@
    - { role: fujitsu_cloud/compute/volume/attach, volume: "{{ active_data_volume }}" }
    - { role: fujitsu_cloud/compute/volume/attach, volume: "{{ standby_data_volume }}" }
 
+# db node configuration
+- hosts: db_hosts
+  gather_facts: yes
+  become: true
+  vars_files:
+   - fujitsu-cloud-LifeKeeper_vars.yml
+   - vars/fujitsu-cloud-settings_vars.yml
+   - vars/fujitsu-cloud-os-settings_vars.yml
+
+  roles: 
+  # datakeeper settings
+   - { role: linux/parted, partition: "{{ datakeeper_partition }}" }
+   - { role: linux/filesystem, filesystem: "{{ datakeeper_partition }}" }
+   - { role: lifekeeper/mount-datakeeper-data-dir, filesystem: "{{ datakeeper_partition }}" }
+  # mysql
+   - { role: linux/yum, rpms: { name: "{{ mysql_rpm_name }}", state: "latest" }, when: do_mysql_install == true }
+   - { role: lifekeeper/create-mysql-datadir, when: do_mysql_install == true }
+   - { role: lifekeeper/config-mysql, when: [ do_lifekeeper_create_resource == true, do_mysql_install == true ] }
+  # postgresql
+   - { role: linux/yum, rpms: { name: "{{ postgresql_rpm_name }}", state: "latest" }, when: do_postgresql_install == true }
+   - { role: lifekeeper/create-postgresql-datadir, when: do_postgresql_install == true }
 
 - hosts: lk_hosts
   gather_facts: yes
   become: true
   vars_files:
-   - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+   - fujitsu-cloud-LifeKeeper_vars.yml
    - vars/fujitsu-cloud-settings_vars.yml
    - vars/fujitsu-cloud-os-settings_vars.yml
 
@@ -100,8 +124,17 @@
     LC_CTYPE: en_US.UTF-8
     LC_MESSAGES: en_US.UTF-8
 
+  pre_tasks:
+    - include_vars: vars/fujitsu-cloud-lifekeeper_qwk_vars.yml
+      when: lk_setup_enable_qwk == true
+    - include_vars: vars/lifekeeper_datakeeper_vars.yml
+      when: lk_setup_enable_datakeeper == true
+    - include_vars: vars/lifekeeper_ec2_ark_vars.yml
+      when: lk_setup_create_ec2_resource == true
+    - include_vars: vars/lifekeeper_oracle_ark_vars.yml
+      when: lk_setup_create_oracle_resource == true
+
   roles:
-   - generic/check-ssh-port
    - { role: linux/set-hostname, when: do_lifekeeper_install == true }
    - { role: linux/sysctl, sysctl: { name: "net.ipv4.conf.all.rp_filter", value: "2", state: "present" }, when: do_lifekeeper_install == true }
    - { role: linux/sysctl, sysctl: { name: "net.ipv4.conf.default.rp_filter", value: "2", state: "present" }, when: do_lifekeeper_install == true }
@@ -113,16 +146,16 @@
 
 
 # Lifekeeper setup for active host
-- hosts: "{{ active_host_name }}"
+- hosts: lk_active
   gather_facts: yes
   become: true
   vars_files:
-    - fujitsu-cloud-LifeKeeper-2nodes_vars.yml
+    - fujitsu-cloud-LifeKeeper_vars.yml
     - vars/fujitsu-cloud-settings_vars.yml
     - vars/fujitsu-cloud-os-settings_vars.yml
 
   pre_tasks:
-    - include_vars: vars/lifekeeper_qwk_vars.yml
+    - include_vars: vars/fujitsu-cloud-lifekeeper_qwk_vars.yml
       when: lk_setup_enable_qwk == true
     - include_vars: vars/lifekeeper_datakeeper_vars.yml
       when: lk_setup_enable_datakeeper == true
@@ -133,6 +166,5 @@
 
   roles:
    - { role: lifekeeper/copy-setup-script, when: do_lifekeeper_create_resource == true }
-   - { role: lifekeeper/config-mysql, when: [ do_lifekeeper_create_resource == true, do_mysql_install == true ] }
    - { role: lifekeeper/run-lifekeeper-setup-script, when: do_lifekeeper_create_resource == true }
 

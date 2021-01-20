@@ -20,8 +20,10 @@ lk_resource_create_mysql_ark: true
 bastion_host_name: LK-TEST-bastion
 active_host_name: LK-TEST-db01
 standby_host_name: LK-TEST-db02
+qw_host_name: LK-TEST-qw
 bastion_os_user: k5user
 lk_os_user: k5user
+qw_os_user: k5user
 timezone: Asia/Tokyo
 root_password: testpass!2020
 lifekeeper_vip: 10.0.111.200
@@ -70,6 +72,12 @@ standby_host_ip_addr: 10.0.111.102
 standby_data_volume:
   - { volume_name: "{{ standby_host_name }}-data-volume", size: 30, state: "present", server: "{{ standby_host_name }}", device_name: "/dev/vdb" }
 
+# Quorum/Witness node settings
+qw_host_volume_size: 30
+qw_host_volume_image: "CentOS 8.2 64bit (English) 01"
+qw_host_server_flavor: "T3-1"
+qw_host_ip_addr: 10.0.111.103
+
 # ----------------------------------------
 # MySQL settings
 # ----------------------------------------
@@ -103,8 +111,7 @@ postgesql_initdb_command: "initdb -D {{ postgresql_data_dir }}/data --encoding=U
 lifekeeper_iso_file: LKL_V951_100620.iso
 lifekeeper_license_files:
  - lifekeeper-license.txt
-lifekeeper_setup_conf_file: lifekeeper_installer.conf
-lk_setup_enable_qwk: false
+lk_setup_enable_qwk: true
 lk_setup_enable_datakeeper: true
 lk_setup_create_ec2_resource: false
 lk_setup_create_oracle_resource: false
@@ -127,12 +134,14 @@ lk_lkAPA: "LKCONF_steeleye_lkAPA=y"
 lk_setup_ark_ip: "ARK_IP=Y"
 lk_setup_active_host_ip_addr_commpath: "ACTIVE_COMMPATH_1_IP_ADDR={{ active_host_ip_addr }}"
 lk_setup_standby_host_ip_addr_commpath: "STANDBY_COMMPATH_1_IP_ADDR={{ standby_host_ip_addr }}"
+lk_setup_qw_commpath_1_ip_addr: "QW_COMMPATH_1_IP_ADDR={{ qw_host_ip_addr }}"
 lk_setup_active_commpath_2_ip_addr: "# ACTIVE_COMMPATH_2_IP_ADDR is not set"
 lk_setup_standby_commpath_2_ip_addr: "# STANDBY_COMMPATH_2_IP_ADDR is not set"
+lk_setup_qw_commpath_2_ip_addr: "# QW_COMMPATH_1_IP_ADDR is not set"
 lk_setup_dk_tag: "DK_TAG=datarep-data"
 
 # MySQL Settings
-lk_setup_ark_mysql: true
+lk_setup_ark_mysql: "ARK_MYSQL=Y"
 lk_setup_mysql_tag: "MYSQL_TAG=mysql"
 lk_setup_mysql_cnf_dir: "MYSQL_CNF_DIR=/etc"
 lk_setup_mysql_bin_dir: "MYSQL_BIN_DIR=/usr/bin"
@@ -141,6 +150,6 @@ lk_setup_mysqladmin_password: "MYSQLADMIN_PASSWORD={{ mysqladmin_password }}"
 lk_setup_mysql_service_name: "MYSQL_SERVICE_NAME={{ mysql_service_name }}"
 
 # PostgreSQL Settings
-lk_setup_ark_postgresql: true
+#lk_setup_ark_postgresql: "ARK_PGSQL=Y"
 
 

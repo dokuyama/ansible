@@ -80,3 +80,14 @@
   with_items: "{{ add_inventory_hosts }}"
   when: "'lk_standby' in item.groups"
 
+- name: add server to inventory
+  add_host:
+    name: "{{ item.instance_name }}"
+    groups: "{{ item.groups }}"
+    ansible_host: "{{ qw_host_ip_addr }}"
+    ansible_user: "{{ item.ansible_user }}"
+    ansible_ssh_private_key_file: "{{ item.ansible_ssh_private_key_file }}"
+    ansible_ssh_extra_args: "{{ item.ansible_ssh_extra_args }}"
+  with_items: "{{ add_inventory_hosts }}"
+  when: "'lk_qw' in item.groups"
+
