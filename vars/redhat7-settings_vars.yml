@@ -7,8 +7,10 @@ qw_os_user: ec2-user
 lk_os_user: ec2-user
 
 # RedHat 7.8 (x86_64)
-bastion_host_ami_id: ami-038a794b902fa0afc
-active_host_ami_id: ami-038a794b902fa0afc
-qw_host_ami_id: ami-038a794b902fa0afc
+ami_owners: 309956199498
+ami_search_string: "RHEL-7.8_HVM_GA-*"
 
+bastion_host_ami_id: "{{ ami_find.image_id }}"
+active_host_ami_id: "{{ ami_find.image_id }}"
+qw_host_ami_id: "{{ ami_find.image_id }}"
 

@@ -1,0 +1,14 @@
+---
+- ec2_ami_info:
+    region: "{{ aws_region }}"
+    profile: "{{ aws_cli_profile | default(omit) }}"
+    filters: 
+      name: "{{ ami_search_string }}"
+      product-code: "{{ ami_product_code | default(omit) }}"
+    owners: "{{ ami_owners }}"
+  register: ami_lists
+
+- name: get latest ami
+  set_fact:
+    ami_find: "{{ ami_lists.images | sort(attribute='creation_date') | last }}"
+

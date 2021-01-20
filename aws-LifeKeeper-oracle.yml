@@ -24,6 +24,7 @@
     - aws/iam/policy/create
     - aws/ec2/key/create
     - { role: aws/ec2/security-group/create, security_group: "{{ aws_ec2_security_groups }}" }
+    - aws/ec2/ami/find
     - aws/ec2/instance/create
     - aws/ec2/eni/create
     - { role: aws/vpc/route-tables/create, route_tables: "{{ private_route_tables }}" }

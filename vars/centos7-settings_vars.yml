@@ -6,9 +6,13 @@ bastion_os_user: centos
 qw_os_user: centos
 lk_os_user: centos
 
-# CentOS 7 (x86_64) - with Updates HV
-bastion_host_ami_id: ami-06a46da680048c8ae
-active_host_ami_id: ami-06a46da680048c8ae
-qw_host_ami_id: ami-06a46da680048c8ae
+# CentOS 7 (x86_64) - with Updates HVM
+ami_owners: "aws-marketplace"
+ami_search_string: "CentOS Linux 7 x86_64 HVM*"
+ami_product_code: "aw0evgkw8e5c1q413zgy5pjce"
+
+bastion_host_ami_id: "{{ ami_find.image_id }}"
+active_host_ami_id: "{{ ami_find.image_id }}"
+qw_host_ami_id: "{{ ami_find.image_id }}"
 
 
