@@ -6,7 +6,6 @@
     path: ~/.ssh
     state: directory
     mode: '0700'
-    backup: true
 
 - name: copy ssh key file to server
   become: yes
@@ -15,4 +14,5 @@
     src: "{{ ansible_ssh_private_key_file }}"
     dest: "~/.ssh/id_rsa"
     mode: 0600
+    backup: true
 
