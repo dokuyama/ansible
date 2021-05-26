@@ -1,7 +1,7 @@
 ---
 - name: create firewall policy
   uri: 
-    url: "https://networking.{{ os_region_name }}.cloud.global.fujitsu.com/v2.0/fw/firewall_policies"
+    url: https://networking.{{ os_region_name }}.cloud.global.fujitsu.com/v2.0/fw/firewall_policies
     method: POST
     headers:
       Content-Type: "application/json"
@@ -11,10 +11,14 @@
     body: "{{ lookup('template', 'firewall_policy.j2') }}"
     status_code: 201
   register: response
+  when:
+    firewall_skip_flag == false
 # - debug:
 #     var: response
 
 - set_fact:
     firewall_policy_id: "{{ response | json_query('json.firewall_policy.id') }}"
+  when:
+    firewall_skip_flag == false
 # - debug:
 #     var: firewall_policy_id

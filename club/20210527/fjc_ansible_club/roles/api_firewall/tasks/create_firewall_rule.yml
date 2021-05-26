@@ -1,7 +1,7 @@
 ---
 - name: create firewall rule
   uri:
-    url: "https://networking.{{ os_region_name }}.cloud.global.fujitsu.com/v2.0/fw/firewall_rules"
+    url: https://networking.{{ os_region_name }}.cloud.global.fujitsu.com/v2.0/fw/firewall_rules
     method: POST
     headers:
       Content-Type: "application/json"
@@ -12,13 +12,13 @@
     status_code: 201
   with_items: "{{ firewall_rules }}"
   register: response
+  when:
+    firewall_skip_flag == false
 # - debug:
 #     msg: "{{ response | json_query('results[*].json.firewall_rule.id') }}"
 
 - set_fact:
     firewall_rule_ids: "{{ response | json_query('results[*].json.firewall_rule.id') }}"
-# - debug:
-#     var: firewall_rule_ids
+  when:
+    firewall_skip_flag == false
 
-# TODO
-# templateのfirewall_rule.j2では、特定のパラメータをnullにしたい場合に対応していないのでそのうち対応したい。

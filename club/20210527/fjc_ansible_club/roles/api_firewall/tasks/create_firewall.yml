@@ -1,7 +1,7 @@
 ---
 - name: create firewall
   uri: 
-    url: "https://networking.{{ os_region_name }}.cloud.global.fujitsu.com/v2.0/fw/firewalls"
+    url: https://networking.{{ os_region_name }}.cloud.global.fujitsu.com/v2.0/fw/firewalls
     method: POST
     headers:
       Content-Type: "application/json"
@@ -11,10 +11,16 @@
     body: "{{ lookup('template', 'firewall.j2') }}"
     status_code: 201
   register: response
+  when:
+    firewall_skip_flag == false
 # - debug:
 #     var: response
 
 - set_fact:
     firewall_id: "{{ response | json_query('json.firewall.id') }}"
+  when:
+    firewall_skip_flag == false
 - debug:
     var: firewall_id
+  when:
+    firewall_skip_flag == false

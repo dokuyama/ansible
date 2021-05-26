@@ -5,8 +5,9 @@
 # sample
 # - {"fw_action": "allow", "fw_protocol": "tcp", "fw_port": "80", "fw_rule_name": "allow_http"}
 firewall_rules:
-  - {"fw_action": "allow", "fw_protocol": "tcp", "fw_port": "80", "fw_rule_name": "allow_http"} 
-  - {"fw_action": "allow", "fw_protocol": "tcp", "fw_port": "443", "fw_rule_name": "allow_https"} 
+  - {"fw_action": "allow", "fw_destination_ip_address": "0.0.0.0/0", "fw_source_ip_address": "0.0.0.0/0", "fw_rule_name": "allow_any"}
+# - {"fw_action": "allow", "fw_protocol": "tcp", "fw_port": "80", "fw_rule_name": "allow_http"} 
+# - {"fw_action": "allow", "fw_protocol": "tcp", "fw_port": "443", "fw_rule_name": "allow_https"} 
 
 
 # API Firewall Policy

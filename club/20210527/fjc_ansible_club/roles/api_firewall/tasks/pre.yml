@@ -7,10 +7,10 @@
     fail_msg: 'Undefined variable found.'
       
 
-
 # 指定のルーターにfirewallがアタッチされていないか確認する
 - name: Get firewall list
   uri: 
+    #url: https://networking.jp-east-3.cloud.global.fujitsu.com/v2.0/fw/firewalls
     url: "https://networking.{{ os_region_name }}.cloud.global.fujitsu.com/v2.0/fw/firewalls"
     method: GET
     headers:
@@ -18,19 +18,49 @@
       Accept: "application/json"
       X-Auth-Token: "{{ x_auth_token }}"
     status_code: 200
-  register: response
+  register: firewalls_list
 
 
-- set_fact:
-     firewall_list: "{{ response | json_query('json.firewalls[*].router_ids')|flatten(levels=1) }}"
-# - debug:
-#     var: firewall_list
+# - name: 'Firewall一覧からIDのみリスト化し、変数に格納'
+#   set_fact:
+#     firewalls_id_list: "{{ firewalls_list | json_query('json.firewalls[*].router_ids')|flatten(levels=1) }}"
+# - name: 'debug: set variable firewall_list'
+#   debug:
+#     var: firewalls_id_list
+
+- name: 'FirewallsにアタッチされたルーターID'
+  set_fact:
+    attatched_router_id_to_all_firewalls: "{{ firewalls_list | json_query('json.firewalls[*].router_ids') | flatten(levels=1) }}"
 
 
-# 指定のルーターに既にFirewallが関連付けられていたらエラーにする。
-- name: Check the router to which the firewall is attached.
-  assert:
-    that:
-      - router_id not in firewall_list
-    success_msg: '{{ router_id }} was not found in {{ firewall_list }}'
-    fail_msg: '{{ router_id }} was found {{ firewall_list }}'
+- name: '{{ firewall_name }}をアタッチしているルーターID一覧'
+  set_fact:
+    attached_router_id_to_firewall: "{{ firewalls_list | json_query(query_strings) | flatten(levels=1) }}"
+  vars:
+    query_strings: "json.firewalls[?name == '{{ firewall_name }}'].router_ids"
+  
+
+- name: 'Create firewall flag'
+  set_fact:
+    firewall_skip_flag: false
+  when:
+    # 作成する名前のFirewallのアタッチ済みルーターIDリストにターゲットルータに含まれていない
+    - router_id not in attached_router_id_to_firewall
+    # 全てのFirewallのアタッチ済みルーターIDリストにターゲットルータが含まれていない
+    - router_id not in attatched_router_id_to_all_firewalls
+
+
+- name: 'Create firewall skip flag'
+  set_fact:
+    firewall_skip_flag: true
+  when:
+    # 作成する名前のFirewallのアタッチ済みルーターIDリストにターゲットルータが含まれてる
+    - router_id in attached_router_id_to_firewall
+
+
+- name: 'Check router is attached to another firewalls'
+  fail:
+    msg: "ルーターに別のFirewallがアタッチされています。"
+  when:
+    - router_id not in attached_router_id_to_firewall
+    - router_id in attatched_router_id_to_all_firewalls
