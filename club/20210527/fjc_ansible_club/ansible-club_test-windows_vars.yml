@@ -32,8 +32,6 @@ security_group_rules:
   - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "{{ ipify_public_ip }}/32" }
 # 3hands
   - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "203.179.84.176/29" }
-# ex office
-  - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "219.127.117.250/32" }
 # dai
   - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "218.219.153.168/29" }
 # Zabbix
