@@ -11,6 +11,7 @@ clouds:
     identity_api_version: 3
     region_name: jp-west-3
     
+clouds:
   east:
     auth:
       auth_url: https://identity.jp-east-3.cloud.global.fujitsu.com/v3/
@@ -23,6 +24,7 @@ clouds:
     identity_api_version: 3
     region_name: jp-east-3
 
+clouds:
   west:
     auth:
       auth_url: https://identity.jp-west-3.cloud.global.fujitsu.com/v3/
