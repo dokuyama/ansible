@@ -1,0 +1,3 @@
+---
+- include_tasks: 'include_clouds.yml'
+- include_tasks: 'get_token.yml'

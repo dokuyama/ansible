@@ -1,0 +1,42 @@
+- name: Add Remote Desktop Service feature
+  win_feature:
+    name: Remote-Desktop-Services
+    include_management_tools: yes
+    state: present
+
+- name: Add RDS-Web-Access feature
+  win_feature:
+    name: RDS-Web-Access
+    include_management_tools: yes
+    state: present
+
+- name: Add RDS-RD-Server feature
+  win_feature:
+    name: RDS-RD-Server
+    include_management_tools: yes
+    state: present
+
+- name: Add RDS-Licensing feature
+  win_feature:
+    name: RDS-Licensing
+    include_management_tools: yes
+    state: present
+
+- name: Add RDS-Connection-Broker feature
+  win_feature:
+    name: RDS-Connection-Broker
+    include_management_tools: yes
+    state: present
+
+#- name: Reboot after creation
+#  win_reboot:
+#    msg: "Server config in progress; rebooting..."
+
+- name: copy rds install powershell script file
+  template:
+    src: "files/Install_RDS.ps1.j2"
+    dest: 'C:\Install_RDS.ps1'
+
+- name: Run install RDS
+  win_shell: powershell.exe  -ExecutionPolicy ByPass -File "C:\Install_RDS.ps1" >> "C:\Install_RDS_log.txt"
+

@@ -1,0 +1,8 @@
+---
+- include_tasks: "pre.yml"
+- include_tasks: "disable-ie-esc.yml"
+- include_tasks: "PolicyFileEditor.yml"
+- include_tasks: "PasswordPolicy.yml"
+- include_tasks: "AddAccount.yml"
+- include_tasks: "Activation.yml"
+- include_tasks: "windows-update.yml"

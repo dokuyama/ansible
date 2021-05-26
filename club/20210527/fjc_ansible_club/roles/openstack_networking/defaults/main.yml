@@ -1,0 +1,73 @@
+---
+# Network
+network_name: os_default_network
+
+# Subnet
+subnet_name: os_default_subnet
+cidr: 192.168.31.0/24
+dns:
+  - 8.8.8.8
+  - 8.8.4.4
+gateway_ip: 192.168.31.254
+dhcp_pool_start: 192.168.31.1
+dhcp_pool_end: 192.168.31.253
+
+# Router
+router_name: os_default_router
+external_network: fip-net
+
+# Security Groups
+security_groups:
+  - name: os_default_sg1
+# - name: os_default_sg2
+# - name: os_default_sg3
+
+##################################
+# LoadBalancer
+##################################
+lb_name: os_ansible_lb
+lb_private_ip: 192.168.31.250
+
+
+##################################
+# LoadBalancer Listener
+##################################
+lb_listener_name: os_ansible_lb_listener
+lb_listener_port: 80
+lb_listener_protocol: HTTP
+# Choices: HTTP/HTTPS/TCP/TERMINATED_HTTPS
+
+
+##################################
+# LoadBalancer Pool
+##################################
+lb_pool_name: os_ansible_lb_pool
+lb_pool_protocol: HTTP
+# Choices: HTTP/HTTPS/PROXY/TCP/UDP
+lb_pool_algorithm: ROUND_ROBIN
+# Choices: ROUND_ROBIN/LEAST_CONNECTIONS/SOURCE_IP
+
+
+##################################
+# LoadBalancer Member
+##################################
+lb_member_name: os_ansible_lb_member
+
+##################################
+# LoadBalancer Health Monitor
+##################################
+lb_monitor_name: os_ansible_healthmonitor
+# 想定する応答コード
+lb_monitor_code: "200" 
+# 異常検出閾値(回)
+lb_retries_down_count: "4"
+# メンバー追加時の正常値（回）
+lb_retries: "3"
+# HTTPメソッド
+lb_http_method: GET
+# チェックパス
+lb_url_path: /healthcheck
+# チェック間隔（秒）
+lb_delay: "60"
+# タイムアウト
+lb_resp_timeout: "5"

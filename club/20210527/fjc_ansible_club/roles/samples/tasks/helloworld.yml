@@ -1,0 +1,4 @@
+---
+- name: say "hello world"
+  debug: 
+    msg: "Hello World!"

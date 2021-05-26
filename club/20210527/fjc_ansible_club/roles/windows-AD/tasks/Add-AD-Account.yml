@@ -1,0 +1,30 @@
+- name: Add Domain Admin to k5user
+  win_domain_user:
+    name: k5user
+    groups:
+     - Domain Admins
+    group_action: add
+
+- name: Add domain admin user
+  win_domain_user:
+    name: "{{ ad_admin_user_name }}"
+    password: "{{ ad_admin_user_password }}"
+    state: present
+    groups:
+      - Domain Admins
+      - Domain Users
+      - Remote Desktop Users
+    groups_action: add
+
+- name: Add domain admin user (if exists)
+  win_domain_user:
+    name: "{{ ad_add_user_account }}"
+    password: "{{ ad_add_user_password }}"
+    state: present
+    groups:
+      - Domain Admins
+      - Domain Users
+      - Remote Desktop Users
+    groups_action: add
+  when: ad_add_user_account is defined
+

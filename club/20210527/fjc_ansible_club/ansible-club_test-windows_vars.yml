@@ -1,0 +1,115 @@
+---
+#----------------------
+# Openstack Networking
+#----------------------
+# Network
+network_name: ansible-club-network
+#
+# Subnet
+subnet_name: ansible-club-subnet
+cidr: 10.101.0.0/24
+# dns:
+#   - 8.8.8.8
+#   - 8.8.4.4
+gateway_ip: 10.101.0.254
+dhcp_pool_start: 10.101.0.1
+dhcp_pool_end: 10.101.0.253
+
+# Router
+router_name: ansible-club-router
+external_network: fip-net
+
+# Security Groups
+#
+# ipify_facts モジュールで自分のIPアドレスを調べて利用する場合はyes
+# ipify_public_ip として参照できる
+use_my_ip: "yes"
+security_groups:
+ - name: ansible-club-sg1
+security_group_rules:
+  - { name: "winrm_http", security_group: "ansible-club-sg1" , protocol: "tcp", port_range_min: "5985", port_range_max: "5985", remote_ip_prefix: "{{ ipify_public_ip }}/32" }
+  - { name: "winrm_https", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "5986", port_range_max: "5986", remote_ip_prefix: "{{ ipify_public_ip }}/32" }
+  - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "{{ ipify_public_ip }}/32" }
+# 3hands
+  - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "203.179.84.176/29" }
+# ex office
+  - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "219.127.117.250/32" }
+# dai
+  - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "218.219.153.168/29" }
+# Zabbix
+  - { name: "zabbix", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "133.162.84.152/32" }
+  - { name: "zabbix", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "10050", port_range_max: "10050", remote_ip_prefix: "133.162.84.152/32" }
+
+#----------------------
+# Openstack Compute
+#----------------------
+# Keypair
+# import_key: "yes"|"no"
+import_key: "no"
+public_key_name: os_ansible_key
+public_key_file: os_ansible_key.pub
+private_key_file: os_ansible_key.pem
+output_dir: files
+# ↓パブリックキーをインポートする時に指定する↓
+#users_public_key: files/os_ansible_key.pub
+
+
+#----------------------
+# API Common
+#----------------------
+# Include clouds.yml
+os_cloud: east
+
+
+#----------------------
+# API Firewall
+#----------------------
+# Firewall Rules
+# firewall_rules:
+#   - {"fw_action": "allow", "fw_protocol": "tcp", "fw_destination_port": "80", "fw_rule_name": "allow_http"} 
+#   - {"fw_action": "allow", "fw_protocol": "tcp", "fw_destination_port": "443", "fw_rule_name": "allow_https"} 
+#   - {"fw_action": "allow", "fw_destination_ip_address": "0.0.0.0/0", "fw_source_ip_address": "0.0.0.0/0", "fw_rule_name": "allow_any"}
+# full parameter sample
+#   - {"fw_action": "allow", "fw_destination_port": "80", "fw_protocol": "tcp", "fw_destination_ip_address": "0.0.0.0/0", "fw_source_ip_address": "0.0.0.0/0", "fw_source_port": "null", "fw_rule_name": "allow_http"}
+
+firewall_rules:
+  - {"fw_action": "allow", "fw_destination_ip_address": "0.0.0.0/0", "fw_source_ip_address": "0.0.0.0/0", "fw_rule_name": "allow_any"}
+
+# 
+# # API Firewall Policy
+firewall_policy_name: ansible-club-policy
+# 
+# # API Firewall
+firewall_name: ansible-club-firewall
+
+
+# Compute
+server_name: "ansible-club-windows"
+server_flavor: "T3-1"
+volume_name: "ansible-club-windows_volume1"
+volume_image: "[Hourly] Windows Server 2019 SE 64bit (Japanese) 02"
+volume_size: 100
+server_security_group: ansible-club-sg1
+group: "winservers"
+local_admin_user: "local-3hands"
+local_admin_password: "32BYgf]mqgxgidq"
+# Optional
+#add_user_account: "user1"
+#add_user_password: "XXXXXXXXXXXXXX"
+
+# Active_Directory
+ad_domain_short: ansible-club
+ad_domain_suffix: local
+ad_domain_name: "{{ ad_domain_short }}.{{ ad_domain_suffix }}"
+ad_safe_mode_password: "32BYgf]mqgxgidq"
+ad_admin_user_name: "3hands"
+ad_admin_user_password: "32BYgf]mqgxgidq"
+#ad_add_user_account: "user1"
+#ad_add_user_password: "XXXXXXXXXXXXX"
+
+# ad-hoc
+win_version: 2019
+
+# Zabbix Agent
+zbx_server_addr: 133.162.84.152
+

@@ -1,0 +1,7 @@
+---
+- name: create network
+  openstack.cloud.network:
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+    name: "{{ network_name }}"
+    admin_state_up: true

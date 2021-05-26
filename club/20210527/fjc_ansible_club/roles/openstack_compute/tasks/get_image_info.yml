@@ -1,0 +1,4 @@
+---
+- name: Show images
+  debug:
+    msg: "{{ result.openstack_image }}"

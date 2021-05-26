@@ -1,0 +1,7 @@
+---
+- name: 'Test variables are OK'
+  assert:
+    that:
+      - network_name is string
+    fail_msg: |
+      network_name: {{ network_name }}

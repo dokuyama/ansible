@@ -1,0 +1,51 @@
+- name: create basiton instance and boot from the volume
+  openstack.cloud.server:
+    state: present
+    cloud: "{{ target_cloud | default(omit) }}"
+    name: "{{ server_name }}"
+    flavor: "{{ server_flavor }}"
+    key_name: "{{ public_key_name }}"
+    image: "{{ volume_image }}"
+    volume_size: "{{ volume_size }}"
+    boot_from_volume: yes
+    terminate_volume: yes
+    security_groups:
+      - "{{ server_security_group | default(omit) }}"
+    network: "{{ network_name }}"
+    auto_ip: no
+    userdata: "{{ server_userdata | default(omit) }}"
+    meta: "{{ server_meta | default(omit) }}"
+  register: create_server_result
+# - debug:
+#     var: create_server_result
+  
+- set_fact:
+    server_id: "{{ create_server_result | json_query('id') }}"
+- debug:
+    var: server_id
+
+# - name: server info
+#   openstack.cloud.server_info:
+#     cloud: "{{ target_cloud | default(omit) }}"
+#     server: "{{ server_name }}"
+#   register: _server_info
+# - debug:
+#     var: _server_info
+  
+- name: assign a new floating ip for bastion
+  openstack.cloud.floating_ip:
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+    reuse: yes
+    server: "{{ server_name }}"
+    network: fip-net
+    wait: true
+    timeout: 180
+  register: floating_ip_result
+
+- set_fact:
+    accessIPv4: "{{ floating_ip_result | json_query('floating_ip.floating_ip_address') }}"
+
+- debug:
+    var: accessIPv4
+

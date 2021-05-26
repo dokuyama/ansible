@@ -1,0 +1,33 @@
+# Keypair
+# import_key: "yes"|"no"
+import_key: "no"
+public_key_name: os_ansible_key
+public_key_file: os_ansible_key.pub
+private_key_file: os_ansible_key.pem
+output_dir: files
+# users_public_key: /home/user/.ssh/id_rsa.pub
+# users_public_key: /home/user/.ssh/id_rsa.pub
+
+# server.yml
+server_name: "os_default_server1"
+server_flavor: "T3-1"
+key_pair: os_ansible_key.pub
+server_security_group: ansible-test-sg1
+volume_name: "os_default_volume1"
+volume_image: "[Hourly] Windows Server 2019 SE 64bit (Japanese) 02"
+volume_size: 80
+# volume_image: "CentOS 7.8 64bit (English) 01"
+# volume_size: 40
+
+# userdata: |
+#   <powershell>
+#   $url = "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
+#   $file = "$env:temp\ConfigureRemotingForAnsible.ps1"
+#
+#   (New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+#
+#   powershell.exe -ExecutionPolicy ByPass -File $file
+#   </powershell>
+
+# add_host.yml
+

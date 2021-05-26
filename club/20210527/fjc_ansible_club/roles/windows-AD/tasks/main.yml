@@ -1,0 +1,6 @@
+---
+- include: "pre.yml"
+- include: "Add-AD-feature.yml"
+- include: "Add-AD-Account.yml"
+- include: "AD-PasswordPolicy.yml"
+

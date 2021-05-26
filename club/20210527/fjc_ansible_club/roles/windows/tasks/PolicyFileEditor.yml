@@ -1,0 +1,36 @@
+- name: install NuGet
+  win_shell: Install-PackageProvider -Name NuGet -Force
+
+- name: check install PolicyFileEditor
+  win_shell: Get-Package | ? { $_.Name -eq "PolicyFileEditor" }
+  register: exist_pfe
+
+- name: install PolicyFileEditor
+  win_shell: Install-Module -Name PolicyFileEditor -Force
+  when: not exist_pfe.stdout
+
+- name: Enable auto windows update
+  win_shell: ipmo PolicyFileEditor; Set-PolicyFileEntry -Path "{{ item.path | default('$env:windir\System32\GroupPolicy\Machine\registry.pol') }}" -Key "{{ item.key }}" -ValueName {{ item.value_name }} -Data {{ item.data }} -Type {{ item.type | default('DWord') }}
+  with_items:
+   # https://docs.microsoft.com/ja-jp/security-updates/windowsupdateservices/18128158
+   # 自動更新を構成する
+   - key: Software\Policies\Microsoft\Windows\WindowsUpdate\AU
+     value_name: NoAutoUpdate
+     data: 0
+   # 自動更新を構成する
+   - key: Software\Policies\Microsoft\Windows\WindowsUpdate\AU
+     value_name: AUOptions
+     data: 4
+   # 「自動更新を構成する」で"自動メンテナンス時にインストールする"にチェック
+   - key: Software\Policies\Microsoft\Windows\WindowsUpdate\AU
+     value_name: AutomaticMaintenanceEnabled
+     data: 1
+   # 「自動更新を構成する」の"インストールを実行する日" (0-7)
+   - key: Software\Policies\Microsoft\Windows\WindowsUpdate\AU
+     value_name: ScheduledInstallDay
+     data: 0
+   # 「自動更新を構成する」の"インストールを実行する時間" (0-23)
+   - key: Software\Policies\Microsoft\Windows\WindowsUpdate\AU
+     value_name: ScheduledInstallTime
+     data: 2
+

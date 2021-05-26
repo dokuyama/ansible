@@ -1,0 +1,12 @@
+- name: set hostname
+  set_fact:
+    win_server_name: "{{ hostvars['localhost'].create_server_result.openstack.hostname }}"
+
+- name: 'Test variables are OK'
+  assert:
+    that:
+      - zbx_server_addr | ipv4
+      - win_server_name is string
+    fail_msg: |
+      zbx_server_addr: {{ zbx_server_addr }}
+      win_server_name: {{ win_server_name }}

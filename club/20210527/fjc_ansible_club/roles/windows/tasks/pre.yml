@@ -1,0 +1,9 @@
+- name: set win_password
+  set_fact: ansible_password="{{ hostvars['localhost'].decode_password.stdout_lines[0] }}"
+- name: set port
+  set_fact: ansible_ssh_port="5986"
+- name: set connection
+  set_fact: ansible_connection="winrm"
+- name: set winrm_server_cert_validation
+  set_fact: ansible_winrm_server_cert_validation="ignore"
+

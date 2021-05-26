@@ -1,0 +1,22 @@
+{
+  "firewall_rule": {
+      "action": "{{ item.fw_action }}",
+      "name": "{{ item.fw_rule_name}}",
+{% if item.fw_destination_port is defined %}
+      "destination_port": "{{ item.fw_destination_port }}",
+{% endif %}
+{% if item.fw_protocol is defined %}
+      "protocol": "{{ item.fw_protocol }}",
+{% endif %}
+{% if item.fw_destination_ip_address is defined %}
+      "destination_ip_address": "{{ item.fw_destination_ip_address }}",
+{% endif %}
+{% if item.fw_source_ip_address is defined %}
+      "source_ip_address": "{{ item.fw_source_ip_address }}",
+{% endif %}
+{% if item.fw_source_port is defined %}
+      "source_port": "{{ item.fw_source_port }}",
+{% endif %}
+      "enabled": true
+  }
+}

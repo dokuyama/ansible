@@ -1,0 +1,9 @@
+- debug: var=create_server_result
+
+- name: add server to inventory
+  add_host:
+    name: "{{ server_name }}"
+    groups: "{{ group }}"
+    ansible_host: "{{ accessIPv4 }}"
+    ansible_user: k5user
+

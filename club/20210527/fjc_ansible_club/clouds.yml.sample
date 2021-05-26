@@ -1,0 +1,37 @@
+clouds:
+  default:
+    auth:
+      auth_url: https://identity.jp-east-3.cloud.global.fujitsu.com/v3/
+      username: 3hands
+      password: 
+      project_domain_name: 契約番号 
+      user_domain_name: 契約番号
+      project_name: project-name
+      project_id: xxxxxxxxxxxxxxxxxxxxxxxxxx
+    identity_api_version: 3
+    region_name: jp-west-3
+    
+  east:
+    auth:
+      auth_url: https://identity.jp-east-3.cloud.global.fujitsu.com/v3/
+      username: 3hands
+      password: 
+      project_domain_name: 契約番号 
+      user_domain_name: 契約番号
+      project_name: project-name
+      project_id: xxxxxxxxxxxxxxxxxxxxxxxxxx
+    identity_api_version: 3
+    region_name: jp-east-3
+
+  west:
+    auth:
+      auth_url: https://identity.jp-west-3.cloud.global.fujitsu.com/v3/
+      username: 3hands
+      password: 
+      project_domain_name: 契約番号 
+      user_domain_name: 契約番号
+      project_name: project-name
+      project_id: xxxxxxxxxxxxxxxxxxxxxxxxxx
+    identity_api_version: 3
+    region_name: jp-west-3
+

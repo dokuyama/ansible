@@ -1,0 +1,3 @@
+---
+# Include clouds.yml
+os_cloud: default

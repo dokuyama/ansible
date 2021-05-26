@@ -1,0 +1,74 @@
+---
+- name: create loadbalancer
+  openstack.cloud.loadbalancer:
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+    name: "{{ lb_name }}"
+    vip_subnet: "{{ subnet_name }}"
+    vip_address: "{{ lb_private_ip }}"
+  register: result
+# - debug:
+#     var: result
+# - set_fact:
+#     lb_id: "{{ result | jsqon_query('id') }}"
+
+- name: create lb_listener
+  openstack.cloud.lb_listener:
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+    name: "{{ lb_listener_name }}"
+    loadbalancer: "{{ lb_name }}"
+    protocol: "{{ lb_listener_protocol }}"
+    protocol_port: "{{ lb_listener_port }}"
+    # connection_limit: 2000
+    # moudleでconnection_limitはサポートされていないため、デフォルトで '-1'　とされる。
+    # fjcloud側の基板で1000000コネクションに制限されている。
+  register: result
+- debug:
+    var: result
+
+
+- name: create lb_pool
+  openstack.cloud.lb_pool:
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+    name: "{{ lb_pool_name }}"
+    # loadbalancer: "{{ lb_name }}"
+    listener: "{{ lb_listener_name }}"
+    # loadbalancer:とlistener:の指定は排他的。fjcloudではlistenerを指定する。
+    protocol: "{{ lb_pool_protocol }}"
+    lb_algorithm: "{{ lb_pool_algorithm }}"
+  register: result
+- debug:
+    var: result
+
+
+# - name: create lb_member
+#   openstack.cloud.lb_member:
+#     cloud: "{{ target_cloud | default(omit) }}"
+#     state: present
+#     name: "{{ lb_member_name }}"
+#     pool: "{{ lb_pool_name }}"
+#   address: 192.168.31.11
+#   protocol_port: 80
+#   regsiter: result
+# - debug:
+#     var: result
+
+- name: create lb_health_monitor
+  openstack.cloud.lb_health_monitor:
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+    name: "{{ lb_monitor_name }}"
+    expected_codes: "{{ lb_monitor_code }}"
+    max_retries_down: "{{ lb_retries_down_count }}"
+    http_method: "{{ lb_http_method }}"
+    url_path: "{{ lb_url_path }}"
+    pool: "{{ lb_pool_name }}"
+    name: "{{ lb_monitor_name }}"
+    delay: "{{ lb_delay }}"
+    max_retries: "{{ lb_retries }}"
+    resp_timeout: "{{ lb_resp_timeout }}"
+  register: result
+- debug:
+    var: result

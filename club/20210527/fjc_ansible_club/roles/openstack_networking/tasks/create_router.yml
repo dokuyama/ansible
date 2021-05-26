@@ -1,0 +1,19 @@
+---
+- name: create router
+  openstack.cloud.router:
+    cloud: "{{ target_cloud | default(omit) }}"
+    name: "{{ router_name  }}"
+    state: present
+    network: "{{ external_network }}"
+    interfaces: 
+      - net: "{{ network_name }}"
+        subnet: "{{ subnet_name }}"
+        portip: "{{ gateway_ip }}"
+  register: response
+# - debug:
+#     var: response
+
+- set_fact:
+    router_id: "{{ response | json_query('router.id') }}"
+- debug:
+    var: router_id

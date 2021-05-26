@@ -1,0 +1,34 @@
+---
+- name: Include clouds.yml
+  include_vars:
+    file: clouds.yml
+    name: clouds
+
+- set_fact:
+    os_auth_url: "{{ clouds | json_query(query_auth_url) }}"
+    os_username: "{{ clouds | json_query(query_username) }}"
+    os_password: "{{ clouds | json_query(query_password) }}"
+    os_project_id: "{{ clouds | json_query(query_project_id) }}"
+    os_domain_name: "{{ clouds | json_query(query_domain_name) }}"
+    os_region_name: "{{ clouds | json_query(query_region_name) }}"
+  vars: 
+    query_auth_url: "clouds.{{ os_cloud }}.auth.auth_url"
+    query_username: "clouds.{{ os_cloud }}.auth.username"
+    query_password: "clouds.{{ os_cloud }}.auth.password"
+    query_project_id: "clouds.{{ os_cloud }}.auth.project_id"
+    query_domain_name: "clouds.{{ os_cloud }}.auth.user_domain_name"
+    query_region_name: "clouds.{{ os_cloud }}.region_name"
+
+
+# - debug:
+#     var: os_auth_url
+# - debug:
+#     var: os_username
+# - debug:
+#     var: os_password
+# - debug:
+#     var: os_project_id
+# - debug:
+#     var: os_domain_name
+# - debug:
+#     var: os_region_name

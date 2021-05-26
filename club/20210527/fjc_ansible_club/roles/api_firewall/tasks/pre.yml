@@ -1,0 +1,36 @@
+---
+- name: Variable check
+  assert:
+    that:
+      - router_id is defined
+      - x_auth_token is defined
+    fail_msg: 'Undefined variable found.'
+      
+
+
+# 指定のルーターにfirewallがアタッチされていないか確認する
+- name: Get firewall list
+  uri: 
+    url: "https://networking.{{ os_region_name }}.cloud.global.fujitsu.com/v2.0/fw/firewalls"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      X-Auth-Token: "{{ x_auth_token }}"
+    status_code: 200
+  register: response
+
+
+- set_fact:
+     firewall_list: "{{ response | json_query('json.firewalls[*].router_ids')|flatten(levels=1) }}"
+# - debug:
+#     var: firewall_list
+
+
+# 指定のルーターに既にFirewallが関連付けられていたらエラーにする。
+- name: Check the router to which the firewall is attached.
+  assert:
+    that:
+      - router_id not in firewall_list
+    success_msg: '{{ router_id }} was not found in {{ firewall_list }}'
+    fail_msg: '{{ router_id }} was found {{ firewall_list }}'

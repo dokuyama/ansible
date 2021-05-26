@@ -1,0 +1,16 @@
+---
+# API Firewall Rules
+# 本来sourceIP等のパラメータがあるが、
+# 今回は必要に求められて作っているだけなので任意のポートを全許可するルールを作成する
+# sample
+# - {"fw_action": "allow", "fw_protocol": "tcp", "fw_port": "80", "fw_rule_name": "allow_http"}
+firewall_rules:
+  - {"fw_action": "allow", "fw_protocol": "tcp", "fw_port": "80", "fw_rule_name": "allow_http"} 
+  - {"fw_action": "allow", "fw_protocol": "tcp", "fw_port": "443", "fw_rule_name": "allow_https"} 
+
+
+# API Firewall Policy
+firewall_policy_name: os_ansible_policy
+
+# API Firewall
+firewall_name: os_ansible_firewall

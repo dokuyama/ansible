@@ -1,0 +1,6 @@
+Enable-PSRemoting -force
+Import-Module RemoteDesktop
+New-RDSessionDeployment -ConnectionBroker {{ server_name }}.{{ ad_domain_name }} -WebAccessServer {{ server_name }}.{{ ad_domain_name }} -SessionHost {{ server_name }}.{{ ad_domain_name }}
+Add-RDServer -Server {{ server_name }}.{{ ad_domain_name }} -Role RDS-RD-SERVER -ConnectionBroker {{ server_name }}.{{ ad_domain_name }}
+Set-RDLicenseConfiguration -force -LicenseServer {{ server_name }}.{{ ad_domain_name }} -Mode PerUser -ConnectionBroker {{ server_name }}.{{ ad_domain_name }}
+

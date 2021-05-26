@@ -1,0 +1,23 @@
+{
+  "auth": {
+    "identity": {
+      "methods": [
+        "password"
+      ],
+      "password": {
+        "user": {
+          "domain": {
+            "name": "{{ os_domain_name }}"
+          },
+          "name": "{{ os_username }}",
+          "password": "{{ os_password }}"
+        }
+      }
+    },
+    "scope": {
+      "project": {
+        "id": "{{ os_project_id }}"
+      }
+    }
+  }
+}

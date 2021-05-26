@@ -1,0 +1,14 @@
+---
+# from keypair.yml
+# キーペア作成後、private_keyをファイルに保存
+- name: download private key
+  local_action: 
+    module: copy
+    content: "{{ result | json_query('key.private_key') }}"
+    dest: "{{ output_dir }}/{{ private_key_file }}"
+
+- name: download public key
+  local_action: 
+    module: copy
+    content: "{{ result | json_query('key.public_key') }}"
+    dest: "{{ output_dir }}/{{ public_key_file }}"

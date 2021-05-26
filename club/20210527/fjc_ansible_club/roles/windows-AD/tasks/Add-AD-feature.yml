@@ -1,0 +1,18 @@
+- name: Add Active Direcotory feature
+  win_feature:
+    name: AD-Domain-Services
+    include_management_tools: yes
+    include_sub_features: yes
+    state: present
+
+- name: Create new forest
+  win_domain:
+    dns_domain_name: "{{ ad_domain_name }}"
+    safe_mode_password: "{{ ad_safe_mode_password }}"
+  register: domain_state
+
+- name: Reboot after creation
+  win_reboot:
+    msg: "Server config in progress; rebooting..."
+  when: domain_state.reboot_required
+

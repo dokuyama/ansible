@@ -1,0 +1,16 @@
+---
+- name: check Activation bat in local
+  local_action: stat path=files/{{ hostvars['localhost'].os_domain_name }}-KMS_{{ win_version }}-jp.bat
+  register: bat_exists
+  ignore_errors: true
+
+- name: copy Activation bat
+  win_copy:
+    src: files/{{ hostvars['localhost'].os_domain_name }}-KMS_{{ win_version }}-jp.bat
+    dest: c:\{{ hostvars['localhost'].os_domain_name }}-KMS_{{ win_version }}-jp.bat
+  when: bat_exists.stat.exists
+
+- name: exec Activation bat
+  win_shell: c:\{{ hostvars['localhost'].os_domain_name }}-KMS_{{ win_version }}-jp.bat
+  when: bat_exists.stat.exists
+

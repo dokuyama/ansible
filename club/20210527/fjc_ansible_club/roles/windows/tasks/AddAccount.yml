@@ -1,0 +1,21 @@
+- name: Add local admin user
+  win_user:
+    name: "{{ local_admin_user }}"
+    password: "{{ local_admin_password }}"
+    state: present
+    groups:
+      - Administrators
+      - Remote Desktop Users
+    groups_action: add
+
+- name: Add local admin user (if exists)
+  win_user:
+    name: "{{ add_user_account }}"
+    password: "{{ add_user_password }}"
+    state: present
+    groups:
+      - Administrators
+      - Remote Desktop Users
+    groups_action: add
+  when: add_user_account is defined
+

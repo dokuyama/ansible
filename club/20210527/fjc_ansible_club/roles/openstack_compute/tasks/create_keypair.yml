@@ -1,0 +1,32 @@
+---
+- name: create keypair
+  openstack.cloud.keypair:
+    cloud: "{{ target_cloud | default(omit) }}"
+    state: present
+    name: "{{ public_key_name }}"
+  register: create_keypair_result
+  when: import_key == "no"
+#     var: create_keypair_result | json_query('changed')
+
+- name: download private key
+  local_action:
+    module: copy
+    content: "{{ create_keypair_result | json_query('key.private_key') }}"
+    dest: "{{ output_dir }}/{{ private_key_file }}"
+  when: (create_keypair_result | json_query('changed')) == true
+
+- name: download public key
+  local_action: 
+    module: copy
+    content: "{{ create_keypair_result | json_query('key.public_key') }}"
+    dest: "{{ output_dir }}/{{ public_key_file }}"
+  when: (create_keypair_result | json_query('changed')) == true
+
+- name: import keypair
+  openstack.cloud.keypair:
+    cloud: "{{ tareget_cloud | default(omit) }}"
+    state: present
+    name: "{{ public_key_name }}"
+    public_key_file: "{{ users_public_key }}"
+  when: import_key == "yes"
+

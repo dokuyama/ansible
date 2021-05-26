@@ -1,0 +1,23 @@
+---
+- name: Disable UAC popup for Administrators
+  win_regedit:
+    key: HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System
+    value: ConsentPromptBehaviorAdmin
+    data: 00000000
+    datatype: dword
+
+- name: disable IE ESC (admin)
+  win_regedit:
+    key: HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}
+    value: IsInstalled
+    data: 0
+    datatype: dword
+
+- name: disable IE ESC (user)
+  win_regedit:
+    key: HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}
+    value: IsInstalled
+    data: 0
+    datatype: dword
+
+#

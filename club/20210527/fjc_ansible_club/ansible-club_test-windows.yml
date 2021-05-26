@@ -1,0 +1,47 @@
+---
+- hosts: localhost
+  connection: localhost
+  gather_facts: no
+  tasks: 
+    - name: Create Network, Subnet, Router
+      import_role:
+        name: openstack_networking
+
+    - name: Create Keypair
+      import_role:
+        name: openstack_compute
+
+    - name: Get API Token
+      import_role:
+        name: api_common
+
+    - name: Create Firewall
+      import_role:
+        name: api_firewall
+
+    - name: Get API compute
+      import_role:
+        name: api_compute
+
+- hosts: winservers
+  gather_facts: no
+  become: no
+  tasks:
+
+    - name: Windows AD Settings
+      import_role:
+        name: windows-AD
+
+    - name: Windows Settings
+      import_role:
+        name: windows
+
+    - name: Windows Remote Desktop Service Settings
+      import_role:
+        name: windows-RDS
+    
+    - name: Zabbix Agent Install
+      import_role:
+        name: win_zabbix
+
+

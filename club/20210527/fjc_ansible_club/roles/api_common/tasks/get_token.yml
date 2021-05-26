@@ -1,0 +1,21 @@
+---
+- name: get token
+  uri:
+    # url: https://identity.jp-east-3.cloud.global.fujitsu.com/v3/auth/tokens
+    url: "{{ os_auth_url }}auth/tokens"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+    body_format: json
+    body: "{{ lookup('template', 'auth.j2') }}"
+    status_code: 201
+  register: response
+# - debug:
+#     var: response
+
+- name: token set
+  set_fact:
+    x_auth_token: "{{ response | json_query('x_subject_token') }}"
+# - debug:
+#     var: x_auth_token

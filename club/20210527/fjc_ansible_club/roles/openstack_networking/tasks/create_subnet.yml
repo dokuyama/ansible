@@ -1,0 +1,12 @@
+---
+- name: create subnet
+  openstack.cloud.subnet:
+    state: present
+    network_name: "{{ network_name }}"
+    name: "{{ subnet_name }}"
+    cidr: "{{ cidr }}"
+    gateway_ip: "{{ gateway_ip }}"
+    dns_nameservers: "{{ dns }}"
+    enable_dhcp: yes
+    allocation_pool_start: "{{ dhcp_pool_start}}" 
+    allocation_pool_end: "{{ dhcp_pool_end }}"

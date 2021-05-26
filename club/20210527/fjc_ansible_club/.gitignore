@@ -1,0 +1,6 @@
+clouds.yml
+inventory.ini
+collections/*
+*.swp
+.DS_Store
+logs/*

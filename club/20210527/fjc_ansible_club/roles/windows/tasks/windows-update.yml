@@ -1,0 +1,11 @@
+---
+- name: windows update
+  win_updates:
+    reboot: true
+    reboot_timeout: 3600
+    category_names:
+      - SecurityUpdates
+      - CriticalUpdates
+      - UpdateRollups
+
+

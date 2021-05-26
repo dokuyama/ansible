@@ -1,0 +1,20 @@
+---
+- name: 'Zabbix Agent Installer Download'
+  win_get_url:
+    url: https://cdn.zabbix.com/zabbix/binaries/stable/4.0/4.0.31/zabbix_agent-4.0.31-windows-amd64-openssl.msi
+    dest: C:\Users\k5user\Desktop\zabbix_agent_installer.msi
+
+- name: 'Install an MSI file'
+  win_package:
+    path: C:\Users\k5user\Desktop\zabbix_agent_installer.msi
+    arguments: 
+      - /q
+      - /passive
+      - SERVER={{ zbx_server_addr }}
+      - SERVERACTIVE={{ zbx_server_addr }}
+      - ENABLEREMOTECOMMANDS=1
+      - HOSTNAME={{ win_server_name }}
+
+
+### Zabbix agent msi installer supported parameters
+# https://www.zabbix.com/documentation/4.0/manual/installation/install_from_packages/win_msi
