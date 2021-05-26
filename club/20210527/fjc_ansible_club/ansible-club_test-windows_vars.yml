@@ -30,13 +30,7 @@ security_group_rules:
   - { name: "winrm_http", security_group: "ansible-club-sg1" , protocol: "tcp", port_range_min: "5985", port_range_max: "5985", remote_ip_prefix: "{{ ipify_public_ip }}/32" }
   - { name: "winrm_https", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "5986", port_range_max: "5986", remote_ip_prefix: "{{ ipify_public_ip }}/32" }
   - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "{{ ipify_public_ip }}/32" }
-# 3hands
-  - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "203.179.84.176/29" }
-# dai
-  - { name: "rdp", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "218.219.153.168/29" }
-# Zabbix
-  - { name: "zabbix", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "3389", port_range_max: "3389", remote_ip_prefix: "133.162.84.152/32" }
-  - { name: "zabbix", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "10050", port_range_max: "10050", remote_ip_prefix: "133.162.84.152/32" }
+  - { name: "zabbix", security_group: "ansible-club-sg1", protocol: "tcp", port_range_min: "10050", port_range_max: "10050", remote_ip_prefix: "{{ ipify_public_ip }}/32" }
 
 #----------------------
 # Openstack Compute
